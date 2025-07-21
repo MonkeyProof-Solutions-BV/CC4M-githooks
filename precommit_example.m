@@ -1,12 +1,17 @@
 function precommit_example(filestring, configFile, severityBoundary, doOpenReport, isVerbose)
     % PRECOMMIT_EXAMPLE The MATLAB side of the GIT pre-commit hook example
     %
+	% Requires CC4M >= v2.18.2
+	%
     % Inputs - required:
     %  
-    % * filestring      (char)      Comma-separated list of all the files to be checked.
+    % * filestring       (char)      Comma-separated list of all the files to be checked.
     %
     % Inputs - optional
-    % * configFile      (char)      Name/filename of the configuration file.
+    % * configFile       (char)      (File)name of CC4M configuration (default: 'MonkeyProofMATLABCodingStandard')
+	% * severityBoundary (double)    Lowest severity that blocks a commit (default:3)	
+	% * doOpenReport     (boolean)   If true (default), opens a the HTML report of the detected violations.
+	% * isVerbose        (boolean)   If true (default), shows some more information in the shell.
 
     % Copyright 2025 Monkeyproof Solutions BV
 

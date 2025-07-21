@@ -48,7 +48,7 @@ fi
 
 echo "Checking MATLAB files"
 
-matlabOutput=$("$matlabExe" -batch "cd('$gitRootFolder');cd ..;cd run_local;install_cc4m_develop;cd('$gitRootFolder'); precommit_example('$gitFullFiles', '$configFile', $severityLevelBoundary)")
+matlabOutput=$("$matlabExe" -batch "cd('$gitRootFolder'); precommit_example('$gitFullFiles', '$configFile', $severityLevelBoundary)")
 errorlevel=$?
 
 if test $errorlevel -eq 0
