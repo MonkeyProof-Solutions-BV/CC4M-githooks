@@ -57,7 +57,7 @@ then
 	echo $matlabOutput
 	exit 0
 else
-	echo "You cannot commit! Critical guidelines are not followed in the M-files. This needs to be fixed first. A report opens that highlights the violations"
+	echo "Commit blocked: One or more files violate critical coding guidelines. Please review and resolve the reported issues before committing."
 	echo " "
 	echo "$matlabOutput"
 	

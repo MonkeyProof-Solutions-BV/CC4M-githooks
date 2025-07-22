@@ -1,26 +1,26 @@
 function precommit_example(filestring, configFile, severityBoundary, doOpenReport, isVerbose)
-    % PRECOMMIT_EXAMPLE The MATLAB side of the GIT pre-commit hook example
+    % PRECOMMIT_EXAMPLE The MATLAB side of the Git pre-commit hook example
     %
-	% Requires CC4M >= v2.18.2
-	%
+    % Requires CC4M >= v2.18.2
+    %
     % Inputs - required:
     %  
     % * filestring       (char)      Comma-separated list of all the files to be checked.
     %
     % Inputs - optional
     % * configFile       (char)      (File)name of CC4M configuration (default: 'MonkeyProofMATLABCodingStandard')
-	% * severityBoundary (double)    Lowest severity that blocks a commit (default:3)	
-	% * doOpenReport     (boolean)   If true (default), opens a the HTML report of the detected violations.
-	% * isVerbose        (boolean)   If true (default), shows some more information in the shell.
+    % * severityBoundary (double)    Lowest severity that blocks a commit (default:3)   
+    % * doOpenReport     (boolean)   If true (default), opens a the HTML report of the detected violations.
+    % * isVerbose        (boolean)   If true (default), shows some more information in the shell.
 
     % Copyright 2025 Monkeyproof Solutions BV
 
     arguments
-        filestring                  char
-        configFile                  char        ='MonkeyProofMATLABCodingStandard'
-        severityBoundary    (1,1)   double      =3
-        doOpenReport        (1,1)   logical     =true
-        isVerbose           (1,1)   logical     =true
+        filestring                   char
+        configFile                   char        = 'MonkeyProofMATLABCodingStandard'
+        severityBoundary    (1, 1)   double      = 3
+        doOpenReport        (1, 1)   logical     = true
+        isVerbose           (1, 1)   logical     = true
     end
 
     files = strsplit(filestring, ',');
@@ -34,7 +34,7 @@ function precommit_example(filestring, configFile, severityBoundary, doOpenRepor
     % HERE define when to fail for this repository
 
     failCondition = cc4mSummary.Results.NrViolations > 0;               % violations found
-    
+
     if isVerbose
         disp(cc4mReportUrl)
         disp(cc4mSummary.Results)
@@ -52,7 +52,7 @@ function precommit_example(filestring, configFile, severityBoundary, doOpenRepor
 
             % Start new matlab session to open the report - a new session is 
             % used so that commit action can be finished immediately.
-            system(['matlab -r ',  addpathCmd ',web(''' cc4mReportUrl ''') &']);
+            system(['matlab -r ',  addpathCmd, ',web(''', cc4mReportUrl, ''') &']);
         end
 
         exit(1)
