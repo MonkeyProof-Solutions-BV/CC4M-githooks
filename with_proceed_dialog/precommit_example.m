@@ -58,11 +58,11 @@ function precommit_example(filestring, configFile, severityBoundary, doOpenRepor
 
         % 
         drawnow()
-        answer = questdlg('Proceed with commit?','Guideline violations found');
+        answer = questdlg('One or more coding guideline violations have been found in the staged files. Do you want to proceed with the commit anyway?','Violations Detected – Proceed with Commit?');
         switch answer
         
             case 'Yes'
-                disp('Altough violations are found, files are committed.')
+                disp('Warning: Coding guideline violations were found, but the commit proceeded due to override.')
                 exit(0)
             otherwise
                 exit(1)
