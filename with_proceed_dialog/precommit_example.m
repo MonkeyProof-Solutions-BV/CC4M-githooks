@@ -23,6 +23,7 @@ function precommit_example(filestring, configFile, severityBoundary, doOpenRepor
         isVerbose           (1,1)   logical     = true
     end
 
+	clc
     files = strsplit(filestring, ',');
 
     [cc4mReportUrl, cc4mSummary] = monkeyproof.cc4m.start(...

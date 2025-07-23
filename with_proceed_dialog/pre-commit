@@ -48,14 +48,14 @@ fi
 
 echo "Checking MATLAB files"
 
-matlabOutput=$("$matlabExe" -nodesktop -nodisplay -r -wait "cd('$gitRootFolder');cd ..;cd run_local;install_cc4m_develop;cd('$gitRootFolder'); precommit_example('$gitFullFiles', '$configFile', $severityLevelBoundary)")
+matlabOutput=$("$matlabExe" -nodesktop -nodisplay -wait -sd "$gitRootFolder" -r "precommit_example('$gitFullFiles', '$configFile', $severityLevelBoundary)")
 
 errorlevel=$?
 
 if test $errorlevel -eq 0
 then
 	echo ok
-	echo $matlabOutput
+	echo "$matlabOutput"
 	exit 0
 else
 	echo "Commit canceled! Critical guidelines are not followed in the M-files. This needs to be fixed first. A report opens that highlights the violations"
