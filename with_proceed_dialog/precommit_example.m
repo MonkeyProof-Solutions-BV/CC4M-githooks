@@ -1,15 +1,18 @@
-function precommit_example(filestring, configFile, severityBoundary, doOpenReport, isVerbose)
+function precommit_example(filestring, configFile, options)
     % PRECOMMIT_EXAMPLE The MATLAB side of the GIT pre-commit hook example
     %
     % Requires CC4M >= v2.18.2
     %
     % Inputs - required:
-    %  
-    % * filestring       (char)      Comma-separated list of all the files to be checked.
     %
-    % Inputs - optional
-    % * configFile       (char)      (File)name of CC4M configuration (default: 'MonkeyProofMATLABCodingStandard')
-    % * severityBoundary (double)    Lowest severity that blocks a commit (default:3)   
+    % * filestring       (char)      Comma-separated list of all the files to be checked.
+    % * configFile       (char)      Optional: (File)name of CC4M configuration
+    %                                default: 'MonkeyProofMATLABCodingStandard'
+    %
+    % Inputs - named arguments
+    %
+    % * severityBlock    (double)    Lowest severity that blocks a commit (default:3)
+    % * severityAllow    (double)    Lowest severity that reports violations, but allows to proceed (default:8)
     % * doOpenReport     (boolean)   If true (default), opens a the HTML report of the detected violations.
     % * isVerbose        (boolean)   If true (default), shows some more information in the shell.
 
@@ -18,57 +21,87 @@ function precommit_example(filestring, configFile, severityBoundary, doOpenRepor
     arguments
         filestring                  char
         configFile                  char        = 'MonkeyProofMATLABCodingStandard'
-        severityBoundary    (1,1)   double      = 3
-        doOpenReport        (1,1)   logical     = true
-        isVerbose           (1,1)   logical     = true
+        options.SeverityBlock       (1, 1)   double      = 3
+        options.SeverityAllow       (1, 1)   double      = 8
+        options.DoOpenReport        (1, 1)   logical     = true
+        options.OpenReportInMatlab  (1, 1)   logical     = false
+        options.IsVerbose           (1, 1)   logical     = true
+
     end
 
-    clc
+    clc %@ok<AVFUN-STAT-27> clean startup info
     files = strsplit(filestring, ',');
 
     [cc4mReportUrl, cc4mSummary] = monkeyproof.cc4m.start(...
         'file',             files, ...
         'configFile',       configFile, ...
-        'runSeverities',    severityBoundary);
+        'runSeverities',    options.SeverityAllow);
 
     %% When to fail
     % HERE define when to fail for this repository
-
-    failCondition = cc4mSummary.Results.NrViolations > 0;               % violations found
-    
-    if isVerbose
+    AllowCondition = cc4mSummary.Results.NrViolations > 0;
+    BlockCondition = any([cc4mSummary.Results.PerCheck.SeverityLevel]) > options.SeverityBlock;
+    if options.IsVerbose
         disp(cc4mReportUrl)
         disp(cc4mSummary.Results)
+    else
+        % do not display anything
     end
 
-    if failCondition
-
-        if doOpenReport
+    if ~BlockCondition && ~AllowCondition
+        % all fine
+        exitFlag = 0;
+    else
+        % if violatiosn are found - potentially open the report
+        if options.DoOpenReport
             % Make sure files analysed are on the path in order to make the links from the report work.
 
-            folders = {}; % cell array with project path
+            if options.OpenReportInMatlab
+                folders = localGetPathFolders(files); % cell array with project path
 
-            % Command to adapt the path.
-            addpathCmd = ['addpath(''', strjoin(folders, ''', '''), ''')'];
+                % Command to adapt the path.
+                addpathCmd = ['addpath(''', strjoin(folders, ''', '''), ''')'];
 
-            % Start new matlab session to open the report - a new session is 
-            % used so that commit action can be finished immediately.
-            system(['matlab -r ',  addpathCmd ',web(''' cc4mReportUrl ''') &']);
+                % Start new matlab session to open the report - a new session is
+                % used so that commit action can be finished immediately.
+                system(['matlab -r ',  addpathCmd, ',web(''', cc4mReportUrl, ''') &']);
+            else
+                web(cc4mReportUrl,  '-browser');
+            end
+        else
+            % do not open report
         end
 
-        % 
-        drawnow()
-        answer = questdlg('One or more coding guideline violations have been found in the staged files. Do you want to proceed with the commit anyway?','Violations Detected – Proceed with Commit?');
-        switch answer
-        
-            case 'Yes'
-                disp('Warning: Coding guideline violations were found, but the commit proceeded due to override.')
-                exit(0)
-            otherwise
-                exit(1)
+        if BlockCondition
+            % errors found
+            exitFlag = 1;
+        else
+            % AllowCondition == true
+            %
+            drawnow()
+            answer = questdlg([ ...
+                'One or more coding guideline violations have been found in the staged files. ', ...
+                'Do you want to proceed with the commit anyway?'...
+                ], ...
+                'Violations Detected – Proceed with Commit?');
+            switch answer
+
+                case 'Yes'
+                    disp('Warning: Coding guideline violations were found, but the commit proceeded due to override.')
+                    exitFlag = 0;
+                otherwise
+                    exitFlag = 1;
+            end
+
         end
-                  
-    else
-        exit(0)
     end
+
+    exit(exitFlag)
+end
+
+
+function folders = localGetPathFolders(files) %#ok<INUSD>
+
+    folders = {};
+
 end
