@@ -49,7 +49,7 @@ fi
 
 echo "Checking MATLAB files"
 
-matlabOutput=$("$matlabExe" -nodesktop -r -wait "cd('$gitRootFolder');cd ..;cd run_local;install_cc4m_develop;cd('$gitRootFolder'); precommit_example('$gitFullFiles', '$configFile', severityBlock=3, severityAllow=8)")
+matlabOutput=$("$matlabExe" -nodesktop -r -wait "cd('$gitRootFolder');cd ..;cd run_local;install_cc4m_develop;cd('$gitRootFolder'); precommit_example('$gitFullFiles', '$configFile', severityBlock=$severityBlock, severityAllow=$severityAllow)")
 
 errorlevel=$?
 
