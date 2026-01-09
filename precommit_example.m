@@ -8,8 +8,8 @@ function precommit_example(filestring, configFile, severityBoundary, doOpenRepor
     % * filestring       (char)      Comma-separated list of all the files to be checked.
     %
     % Inputs - optional
-    % * configFile       (char)      (File)name of CC4M configuration (default: 'MonkeyProofMATLABCodingStandard')
-    % * severityBoundary (double)    Lowest severity that blocks a commit (default:3)   
+    % * configFile       (char)      (File)name of CC4M configuration (default: 'MonkeyProofMATLABCodingStandard').
+    % * severityBoundary (double)    Lowest severity that blocks a commit (default:3).
     % * doOpenReport     (boolean)   If true (default), opens a the HTML report of the detected violations.
     % * isVerbose        (boolean)   If true (default), shows some more information in the shell.
 
@@ -30,9 +30,8 @@ function precommit_example(filestring, configFile, severityBoundary, doOpenRepor
         'configFile',       configFile, ...
         'runSeverities',    severityBoundary);
 
-    %% When to fail
-    % HERE define when to fail for this repository
-
+    %% When to fail.
+    % Here define when to fail for this repository.
     failCondition = cc4mSummary.Results.NrViolations > 0;               % violations found
 
     if isVerbose
@@ -45,7 +44,7 @@ function precommit_example(filestring, configFile, severityBoundary, doOpenRepor
         if doOpenReport
             % Make sure files analysed are on the path in order to make the links from the report work.
 
-            folders = {}; % cell array with project path
+            folders = {}; % Cell array with project path.
 
             % Command to adapt the path.
             addpathCmd = ['addpath(''', strjoin(folders, ''', '''), ''')'];
