@@ -8,7 +8,8 @@ matlabRoot="/c/Program Files/MATLAB/R2025a"
 matlabExe="$matlabRoot/bin/matlab"
 
 # Only rules with sevirty level equal to or hight than "severityLevelBoundary" will be included.
-severityLevelBoundary=10
+severityBlock=3
+severityAllow=8
 
 # From the predefined configurations, use the "MonkeyProof Coding Standard for MATLAB".
 configFile=MonkeyProofMATLABCodingStandard
@@ -47,7 +48,7 @@ fi
 
 echo "Checking MATLAB files."
 
-matlabOutput=$("$matlabExe" -nodesktop -nodisplay -wait -sd "$gitRootFolder" -r "precommit_example('$gitFullFiles', '$configFile', $severityLevelBoundary)")
+matlabOutput=$("$matlabExe" -nodesktop -r -wait "cd('$gitRootFolder');cd ..;cd run_local;install_cc4m_develop;cd('$gitRootFolder'); precommit_example('$gitFullFiles', '$configFile', severityBlock=$severityBlock, severityAllow=$severityAllow)")
 
 errorlevel=$?
 
