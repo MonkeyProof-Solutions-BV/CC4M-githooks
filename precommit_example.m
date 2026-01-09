@@ -13,7 +13,7 @@ function precommit_example(filestring, configFile, severityBoundary, doOpenRepor
     % * doOpenReport     (boolean)   If true (default), opens a the HTML report of the detected violations.
     % * isVerbose        (boolean)   If true (default), shows some more information in the shell.
 
-    % Copyright 2025 Monkeyproof Solutions BV
+    % Copyright 2025 MonkeyProof Solutions BV
 
     arguments
         filestring                   char
@@ -42,7 +42,7 @@ function precommit_example(filestring, configFile, severityBoundary, doOpenRepor
     if failCondition
 
         if doOpenReport
-            % Make sure files analysed are on the path in order to make the links from the report work.
+            % Make sure files analyzed are on the path in order to make the links from the report work.
 
             folders = {}; % Cell array with project path.
 

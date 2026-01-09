@@ -16,17 +16,16 @@ function precommit_example(filestring, configFile, options)
     % * doOpenReport     (boolean)   If true (default), opens a the HTML report of the detected violations.
     % * isVerbose        (boolean)   If true (default), shows some more information in the shell.
 
-    % Copyright 2025 Monkeyproof Solutions BV
+    % Copyright 2025 MonkeyProof Solutions BV
 
     arguments
         filestring                  char
-        configFile                  char        = 'MonkeyProofMATLABCodingStandard'
+        configFile                  char                 = 'MonkeyProofMATLABCodingStandard'
         options.SeverityBlock       (1, 1)   double      = 3
         options.SeverityAllow       (1, 1)   double      = 8
         options.DoOpenReport        (1, 1)   logical     = true
         options.OpenReportInMatlab  (1, 1)   logical     = false
         options.IsVerbose           (1, 1)   logical     = true
-
     end
 
     clc %@ok<AVFUN-STAT-27> clean startup info
@@ -37,58 +36,60 @@ function precommit_example(filestring, configFile, options)
         'configFile',       configFile, ...
         'runSeverities',    options.SeverityAllow);
 
-    %% When to fail
-    % HERE define when to fail for this repository
+    %% When to fail.
+    % Here define when to fail for this repository.
     AllowCondition = cc4mSummary.Results.NrViolations > 0;
     BlockCondition = any([cc4mSummary.Results.PerCheck.SeverityLevel]) > options.SeverityBlock;
+
     if options.IsVerbose
         disp(cc4mReportUrl)
         disp(cc4mSummary.Results)
     else
-        % do not display anything
+        % Do not display anything.
     end
 
     if ~BlockCondition && ~AllowCondition
-        % all fine
+        % All fine.
         exitFlag = 0;
     else
-        % if violatiosn are found - potentially open the report
+        % If violations are found - potentially open the report.
         if options.DoOpenReport
-            % Make sure files analysed are on the path in order to make the links from the report work.
+            % Make sure files analyzed are on the path in order to make the links from the report work.
 
             if options.OpenReportInMatlab
-                folders = localGetPathFolders(files); % cell array with project path
+                folders = localGetPathFolders(files); % Cell array with project path.
 
                 % Command to adapt the path.
                 addpathCmd = ['addpath(''', strjoin(folders, ''', '''), ''')'];
 
                 % Start new matlab session to open the report - a new session is
                 % used so that commit action can be finished immediately.
-                system(['matlab -r ',  addpathCmd, ',web(''', cc4mReportUrl, ''') &']);
+                system(['matlab -r ', addpathCmd, ',web(''', cc4mReportUrl, ''') &']);
             else
                 web(cc4mReportUrl,  '-browser');
             end
         else
-            % do not open report
+            % Do not open report.
         end
 
         if BlockCondition
-            % errors found
+            % Errors found.
             exitFlag = 1;
         else
             % AllowCondition == true
-            %
             drawnow()
             answer = questdlg([ ...
                 'One or more coding guideline violations have been found in the staged files. ', ...
                 'Do you want to proceed with the commit anyway?'...
                 ], ...
                 'Violations Detected – Proceed with Commit?');
+
             switch answer
 
                 case 'Yes'
                     disp('Warning: Coding guideline violations were found, but the commit proceeded due to override.')
                     exitFlag = 0;
+
                 otherwise
                     exitFlag = 1;
             end
@@ -101,7 +102,5 @@ end
 
 
 function folders = localGetPathFolders(files) %#ok<INUSD>
-
     folders = {};
-
 end

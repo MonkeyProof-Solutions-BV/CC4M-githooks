@@ -7,7 +7,8 @@
 matlabRoot="/c/Program Files/MATLAB/R2025a"
 matlabExe="$matlabRoot/bin/matlab"
 
-# Only rules with sevirty level equal to or hight than "severityLevelBoundary" will be included.
+# Only rules with severity level equal to or higher than "severityAllow" will be included.
+# Violations of rules with severity level equal to or higher than "severityBlock" will block the commit.
 severityBlock=3
 severityAllow=8
 
