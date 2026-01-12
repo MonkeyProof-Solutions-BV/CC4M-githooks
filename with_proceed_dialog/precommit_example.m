@@ -92,7 +92,6 @@ function precommit_example(filestring, configFile, options)
                 otherwise
                     exitFlag = 1;
             end
-
         end
     end
 
