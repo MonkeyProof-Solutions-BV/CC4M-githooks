@@ -85,7 +85,6 @@ function precommit_example(filestring, configFile, options)
                 'Violations Detected – Proceed with Commit?');
 
             switch answer
-
                 case 'Yes'
                     disp('Warning: Coding guideline violations were found, but the commit proceeded due to override.')
                     exitFlag = 0;
