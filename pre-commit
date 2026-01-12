@@ -7,26 +7,25 @@
 matlabRoot="/c/Program Files/MATLAB/R2025a"
 matlabExe="$matlabRoot/bin/matlab"
 
-# only rules with sevirty level equal to or hight than "severityLevelBoundary" will be included
+# Only rules with severity level equal to or higher than "severityLevelBoundary" will be included.
 severityLevelBoundary=3
 
-# From the predefined configurations, use the "MonkeyProof Coding Standard for MATLAB"
+# From the predefined configurations, use the "MonkeyProof Coding Standard for MATLAB".
 configFile=MonkeyProofMATLABCodingStandard
 
-# List of extensions to include
+# List of extensions to include.
 supportedExtensions="\.m$|\.mlx$|\.slx$|\.mlapp$|\.mdl$"
 
-# GIT repository root folder
+# GIT repository root folder.
 gitRootFolder=$(git rev-parse --show-toplevel)
 
-# Initialize variables
+# Initialize variables.
 gitFullFiles=
 count=0
 
-## The hook
-# Loop over files to commit, just keep files to check
+## The hook.
+# Loop over files to commit, just keep files to check.
 for file in $(git diff --cached --name-only --diff-filter=ACM); do
-
   if echo "$file" | grep -qE "$supportedExtensions"; then
     echo "$file contains MATLAB code."
     if [ 1 -eq $count ]
@@ -42,11 +41,11 @@ done
 
 if test $count -eq 0 
 then
-	echo "no MATLAB files to check"
+	echo "No MATLAB files to check."
 	exit 0
 fi
 
-echo "Checking MATLAB files"
+echo "Checking MATLAB files."
 
 matlabOutput=$("$matlabExe" -batch "cd('$gitRootFolder'); precommit_example('$gitFullFiles', '$configFile', $severityLevelBoundary)")
 errorlevel=$?
