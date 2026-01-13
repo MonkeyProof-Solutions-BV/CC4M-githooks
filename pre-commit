@@ -56,7 +56,7 @@ fi
 echo "Checking MATLAB files."
 
 
-matlabOutput=$(python precommit.py "$envdir/Lib" "$matlabExe" "$gitRootFolder" "precommit_example('$gitFullFiles', '$configFile', $severityLevelBoundary)")
+matlabOutput=$(python $gitRootFolder/.git/hooks/precommit.py "$envdir/Lib" "$matlabExe" "$gitRootFolder" "precommit_example('$gitFullFiles', '$configFile', $severityLevelBoundary)")
 errorlevel=$?
 echo "return from python"
 echo "error: $errorlevel"
