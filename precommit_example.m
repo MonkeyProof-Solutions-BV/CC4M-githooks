@@ -1,4 +1,4 @@
-function precommit_example(filestring, configFile, severityBoundary, doOpenReport, isVerbose)
+function exitFlag = precommit_example(filestring, configFile, severityBoundary, doOpenReport, isVerbose)
     % PRECOMMIT_EXAMPLE The MATLAB side of the GIT pre-commit hook example
     %
     % Requires CC4M >= v2.18.2
@@ -13,7 +13,7 @@ function precommit_example(filestring, configFile, severityBoundary, doOpenRepor
     % * doOpenReport     (boolean)   If true (default), opens a the HTML report of the detected violations.
     % * isVerbose        (boolean)   If true (default), shows some more information in the shell.
 
-    % Copyright 2025 MonkeyProof Solutions BV
+    % Copyright 2026 MonkeyProof Solutions BV
 
     arguments
         filestring                  char
@@ -23,6 +23,7 @@ function precommit_example(filestring, configFile, severityBoundary, doOpenRepor
         isVerbose           (1,1)   logical     = true
     end
 
+    exitFlag = 0;
     clc
     files = strsplit(filestring, ',');
 
@@ -48,11 +49,10 @@ function precommit_example(filestring, configFile, severityBoundary, doOpenRepor
             folders = {}; % Cell array with project path.
 
             % Command to adapt the path.
-            addpathCmd = ['addpath(''', strjoin(folders, ''', '''), ''')'];
+            %addpathCmd = ['addpath(''', strjoin(folders, ''', '''), ''')'];
 
-            % Start new matlab session to open the report - a new session is 
-            % used so that commit action can be finished immediately.
-            system(['matlab -r ',  addpathCmd ',web(''' cc4mReportUrl ''') &']);
+            
+            web(cc4mReportUrl);
         end
 
         % 
@@ -62,12 +62,12 @@ function precommit_example(filestring, configFile, severityBoundary, doOpenRepor
         
             case 'Yes'
                 disp('Warning: Coding guideline violations were found, but the commit proceeded due to override.')
-                exit(0)
             otherwise
-                exit(1)
+                exitFlag = 1;
+
         end
                   
     else
-        exit(0)
+        % No code issues found.
     end
 end
