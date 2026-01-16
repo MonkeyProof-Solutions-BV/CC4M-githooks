@@ -26,8 +26,20 @@ By default, the pre-commit hook runs CC4M in a separate MATLAB session, which is
 4. Run install.m
     - Creates a Python environment in `fullfile(userpath(), 'cc4m', 'python')`
     - Installs the matlabengine package from PyPi
+    - Adds MATLAB files to `userpath()`
 5. Copy the file `pre-commit` to the folder _'./.git/hooks'_ for all the local repositories you like to equip with the pre-commit action.
 
+## Use
+
+After the installation procedure, every commit will trigger a CC4M run on all MATLAB files that are part of the commit. The first check takes more time, as a new MATLAB session is started using the `matlabengine`. This session will be reused with the following commits.
+
+When all checks pass, the files will be committed. In case of violations, you can still enforce a commit; just select "Yes" from te dialog that pops up.
+
+![alt text](proceed-dialog.png)
+
+### Connect with open development session.
+
+You can reuse the MATLAB session you have open already, by sharing the engine with the name "CC4M_MATLAB_SESSION" or runnning `cc4m_connectpy()` .
 
 # Links
 
