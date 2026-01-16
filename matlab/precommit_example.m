@@ -23,9 +23,8 @@ function exitFlag = precommit_example(filestring, configFile, severityBoundary, 
         isVerbose           (1,1)   logical     = true
     end
 
-    exitFlag = 0;
-    clc
-    files = strsplit(filestring, ',');
+    exitFlag = 1; %#ok<NASGU> initialize
+    files    = strsplit(filestring, ',');
 
     [cc4mReportUrl, cc4mSummary] = monkeyproof.cc4m.start(...
         'file',             files, ...
@@ -44,24 +43,22 @@ function exitFlag = precommit_example(filestring, configFile, severityBoundary, 
     if failCondition
 
         if doOpenReport
-            % Make sure files analyzed are on the path in order to make the links from the report work.
+            % TODO: Make sure files analyzed are on the path in order to make the links from the report work.
 
-            folders = {}; % Cell array with project path.
-
+            folders = {}; %#ok<NASGU> % TODO: Cell array with project path.
             % Command to adapt the path.
             %addpathCmd = ['addpath(''', strjoin(folders, ''', '''), ''')'];
 
-            
             web(cc4mReportUrl);
         end
 
-        % 
         drawnow()
         answer = questdlg('One or more coding guideline violations have been found in the staged files. Do you want to proceed with the commit anyway?','Violations Detected – Proceed with Commit?');
         switch answer
         
             case 'Yes'
                 disp('Warning: Coding guideline violations were found, but the commit proceeded due to override.')
+                exitFlag = 0;
             otherwise
                 exitFlag = 1;
 
@@ -69,5 +66,6 @@ function exitFlag = precommit_example(filestring, configFile, severityBoundary, 
                   
     else
         % No code issues found.
+        exitFlag = 0;
     end
 end

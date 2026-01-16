@@ -3,9 +3,19 @@
 # A hook script to verify MATLAB code using CC4M.
 # Called by "git commit" with no arguments.
 
-## Generic settings
+## Configurable settings
+# Location of the MATLAB installatio to use.
 matlabRoot="/c/Program Files/MATLAB/R2025b"
+
+# From the predefined configurations, use the "MonkeyProof Coding Standard for MATLAB".
+configFile=MonkeyProofMATLABCodingStandard
+
+# List of extensions to include.
+supportedExtensions="\.m$|\.mlx$|\.slx$|\.mlapp$|\.mdl$"
+
+## Generic settings
 matlabExe="$matlabRoot/bin/matlab"
+matlabInitCmd="addpath(monkeyproof.cc4m.utils.userpath())";
 envdir=$USERPROFILE/Documents/MATLAB/cc4m/python/25.2
 
 # GIT repository root folder.
@@ -21,19 +31,13 @@ PYTHONPATH="$envdir/Lib;$PYTHONPATH"
 # Only rules with severity level equal to or higher than "severityLevelBoundary" will be included.
 severityLevelBoundary=10
 
-# From the predefined configurations, use the "MonkeyProof Coding Standard for MATLAB".
-configFile=MonkeyProofMATLABCodingStandard
-
-# List of extensions to include.
-supportedExtensions="\.m$|\.mlx$|\.slx$|\.mlapp$|\.mdl$"
-
 # Initialize variables.
 gitFullFiles=
 count=0
 
 ## The hook.
 # Loop over files to commit, just keep files to check.
-for file in $(git diff  --name-only --diff-filter=ACM); do
+for file in $(git diff --cached --name-only --diff-filter=ACM); do
   if echo "$file" | grep -qE "$supportedExtensions"; then
     echo "$file contains MATLAB code."
     if [ 1 -eq $count ]
@@ -50,25 +54,23 @@ done
 if test $count -eq 0 
 then
 	echo "No MATLAB files to check."
-	#exit 0
+	exit 0
 fi
 
 echo "Checking MATLAB files."
-
-
-matlabOutput=$(python $gitRootFolder/.git/hooks/precommit.py "$envdir/Lib" "$matlabExe" "$gitRootFolder" "precommit_example('$gitFullFiles', '$configFile', $severityLevelBoundary)")
+echo " "
+# echo "'$gitFullFiles"
+# echo " "
+matlabOutput=$(python -m cc4m_githooks.precommit "$envdir/Lib" "$matlabExe" "$gitRootFolder" "precommit_example('$gitFullFiles', '$configFile', $severityLevelBoundary)")
 errorlevel=$?
-echo "return from python"
-echo "error: $errorlevel"
-echo "$matlabOutput"
-
-#matlabOutput=$("$matlabExe" -nodesktop -nodisplay -wait -sd "$gitRootFolder" -r "precommit_example('$gitFullFiles', '$configFile', $severityLevelBoundary)")
-
+# echo "return from python"
+# echo "error: $errorlevel"
+# echo "$matlabOutput"
 
 if test $errorlevel -eq 0
 then
 	echo ok
-	exit 1
+	exit 0
 else
 	echo "Commit canceled! Critical guidelines are not followed in the M-files. This needs to be fixed first. A report opens that highlights the violations"
 	echo " "

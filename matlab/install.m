@@ -20,7 +20,7 @@ function [hasFailed, msg] = install(usePPI)
     targetDir        = fullfile(userpath, 'cc4m', 'python', versionInfo.MATLABVersionNr);
     activateCall     = fullfile(targetDir, 'Scripts', 'activate');
     [~, ~]           = mkdir(targetDir);
-    pythonDir        = fullfile(pwd, '..', 'cc4mpy');
+    pythonDir        = fullfile(pwd, '..', 'cc4m_githooks');
 
     % Make sure Python environment available.
     disp("Checking if Python is available.")
@@ -29,7 +29,7 @@ function [hasFailed, msg] = install(usePPI)
         % No Python available
         hasFailed = true;
         disp("No Python is available.")
-        msg = "No Python Installed or available via MATLAB.";
+        msg = "No Python installed or available via MATLAB.";
     else
         % Python found
         pyCmd = pe.Executable;
@@ -61,7 +61,7 @@ function [hasFailed, msg] = install(usePPI)
 
     end
 
-    % Install local files
+    % Install Python - GIT integration files
     if ~hasFailed
         disp("MATLAB engine installed. Now adding CC4M integration.")
 
@@ -75,7 +75,14 @@ function [hasFailed, msg] = install(usePPI)
             disp("CC4M integration installed.")
 
             pipCommand = "" + activateCall  + " && " + "pip list";
-            [hasFailed, msg] = system(pipCommand)
+            [hasFailed, msg] = system(pipCommand);
         end
+    end
+
+    % Install Required MATLAB files - in the default userpath
+    if ~hasFailed
+        disp("Now adding CC4M MATLAB code.")
+        destFolder = monkeyproof.cc4m.utils.userpath();
+        [isOk, msg] = copyfile('precommit_example.m', destFolder, 'f');
     end
 end

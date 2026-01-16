@@ -1,7 +1,7 @@
 [project]
-name = "cc4mpy"
+name = "cc4m_githooks"
 version = "0.1.0"
-description = "A module fior integration of CC4M with GIT pre-commit hooks via Python."
+description = "A module for integration of CC4M with GIT pre-commit hooks using Python and the matlabengine."
 authors = [
     { name = "MonkeyProof Solutions BV", email = "info@monkeyproofsolutions.nl" },
 ]
@@ -14,7 +14,5 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3 :: Only",
 ]
-# TODO: add keywords
-keywords = []
-# TODO: add dependencies
+keywords = ["CC4M", "MATLAB", "GIT"]
 dependencies = ["matlabengine"]

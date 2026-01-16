@@ -42,6 +42,9 @@ def run(envDir, matlabExe, gitRootFolder, matlabCmd):
         
 
     eng = matlab.engine.connect_matlab(ENG_ID)
+    # Add folder that contains the CC4M calling routine to the path.
+    eng.eval("addpath(monkeyproof.cc4m.utils.userpath())")
+    # perform the check
     exitFlag = eng.eval(matlabCmd)
     eng.quit()
     if exitFlag == 1:
