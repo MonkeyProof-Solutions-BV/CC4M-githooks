@@ -1,4 +1,4 @@
-function [hasFailed, msg] = install(usePPI)
+function varargout = install(usePPI)
     % INSTALL hooks support for GIT
     %
 
@@ -85,4 +85,16 @@ function [hasFailed, msg] = install(usePPI)
         destFolder = monkeyproof.cc4m.utils.userpath();
         [isOk, msg] = copyfile('precommit_example.m', destFolder, 'f');
     end
+
+    for iOut = 1:nargout
+        switch iOut
+            case 1
+                varargout{1} = isOk;
+
+            case 2
+                varargout{2} = msg;
+
+        end
+    end
+
 end
