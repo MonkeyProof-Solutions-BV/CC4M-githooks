@@ -7,5 +7,6 @@ function name = cc4m_connectpy()
     else
         % ok
     end
+
     name = matlab.engine.engineName;
 end

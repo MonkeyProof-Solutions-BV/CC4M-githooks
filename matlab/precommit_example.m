@@ -1,5 +1,5 @@
 function exitFlag = precommit_example(filestring, configFile, severityBoundary, doOpenReport, isVerbose)
-    % PRECOMMIT_EXAMPLE The MATLAB side of the GIT pre-commit hook example
+    % PRECOMMIT_EXAMPLE The MATLAB side of the Git pre-commit hook example.
     %
     % Requires CC4M >= v2.18.2
     %
@@ -55,15 +55,13 @@ function exitFlag = precommit_example(filestring, configFile, severityBoundary, 
         drawnow()
         answer = questdlg('One or more coding guideline violations have been found in the staged files. Do you want to proceed with the commit anyway?','Violations Detected – Proceed with Commit?');
         switch answer
-        
             case 'Yes'
                 disp('Warning: Coding guideline violations were found, but the commit proceeded due to override.')
                 exitFlag = 0;
+
             otherwise
                 exitFlag = 1;
-
         end
-                  
     else
         % No code issues found.
         exitFlag = 0;

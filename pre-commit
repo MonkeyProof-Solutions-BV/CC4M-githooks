@@ -18,10 +18,10 @@ matlabExe="$matlabRoot/bin/matlab"
 matlabInitCmd="addpath(monkeyproof.cc4m.utils.userpath())";
 envdir=$USERPROFILE/Documents/MATLAB/cc4m/python/25.2
 
-# GIT repository root folder.
+# Git repository root folder.
 gitRootFolder=$(git rev-parse --show-toplevel)
 
-#activate Python environment
+# Activate Python environment.
 . $envdir/Scripts/activate
 
 echo "adapt PythonPath"
