@@ -15,7 +15,7 @@ function varargout = install(usePPI)
         msg
     end
 
-    % Define locations
+    % Define locations.
     [~, versionInfo] = monkeyproof.cc4m.utils.getEnvironmentInfo();
     targetDir        = fullfile(userpath, 'cc4m', 'python', versionInfo.MATLABVersionNr);
     activateCall     = fullfile(targetDir, 'Scripts', 'activate');
@@ -25,16 +25,17 @@ function varargout = install(usePPI)
     % Make sure Python environment available.
     disp("Checking if Python is available.")
     pe = pyenv();
+
     if isempty(pe.Version)
-        % No Python available
+        % No Python available.
         hasFailed = true;
         disp("No Python is available.")
         msg = "No Python installed or available via MATLAB.";
     else
-        % Python found
+        % Python found.
         pyCmd = pe.Executable;
 
-        % Test if environment already exists
+        % Test if environment already exists.
         pipCommand = "" + activateCall  + " && " + "pip list";
         [hasFailed, msg] = system(pipCommand);
 
@@ -42,26 +43,26 @@ function varargout = install(usePPI)
             % No environment yet.
             disp("Installing Python environment.")
 
-            % Create venv
+            % Create venv.
             pipCommand = "cd """ + targetDir  + """ && " + pyCmd + " -m venv """ + targetDir + """ && " + activateCall;
 
-            % Install the engine
+            % Install the engine.
             if usePPI
-                % From Python Package Index
+                % From Python Package Index.
                 pipCommand = pipCommand + ...
                     " && " + "pip install matlabengine>=" + versionInfo.MATLABVersionNr;
             else
-                % From local files
+                % From local files.
                 pipCommand = pipCommand + ...
                     " && " + "cd """ + fullfile(matlabroot, 'extern', 'engines', 'python') + """" + ...
                     " && " + "python setup.py build --build-base=""" + targetDir + """"; % --build-base=""" + targetDir + """
             end
+
             [hasFailed, msg] = system(pipCommand);
         end
-
     end
 
-    % Install Python - GIT integration files
+    % Install Python - Git integration files.
     if ~hasFailed
         disp("MATLAB engine installed. Now adding CC4M integration.")
 
@@ -79,7 +80,7 @@ function varargout = install(usePPI)
         end
     end
 
-    % Install Required MATLAB files - in the default userpath
+    % Install Required MATLAB files in the default userpath.
     if ~hasFailed
         disp("Now adding CC4M MATLAB code.")
         destFolder = monkeyproof.cc4m.utils.userpath();

@@ -6,7 +6,7 @@ authors = [
     { name = "MonkeyProof Solutions BV", email = "info@monkeyproofsolutions.nl" },
 ]
 license = "MIT"
-readme = {"file" = "README.md", "content-type" = "text/markdown"}
+readme = { "file" = "README.md", "content-type" = "text/markdown" }
 # Please consult https://pypi.org/classifiers/ for a full list.
 classifiers = [
     "Development Status :: 3 - Alpha",
