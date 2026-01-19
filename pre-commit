@@ -59,21 +59,35 @@ fi
 
 echo "Checking MATLAB files."
 echo " "
-# echo "'$gitFullFiles"
-# echo " "
-matlabOutput=$(python -m cc4m_githooks.precommit "$envdir/Lib" "$matlabExe" "$gitRootFolder" "precommit_example('$gitFullFiles', '$configFile', $severityLevelBoundary)")
+
+matlabOutput=$(python -m cc4m_githooks.precommit "$envdir/Lib" "$matlabExe" "$gitRootFolder" "precommit_example('$gitFullFiles', '$configFile', severityBlock=$severityBlock, severityAllow=$severityAllow)")
 errorlevel=$?
-# echo "return from python"
-# echo "error: $errorlevel"
-# echo "$matlabOutput"
+echo "$errorlevel"
 
 if test $errorlevel -eq 0
 then
 	echo ok
 	exit 0
 else
-	echo "Commit canceled! Critical guidelines are not followed in the M-files. This needs to be fixed first. A report opens that highlights the violations"
-	echo " "
-	exit 1		
+	if test $errorlevel -eq 1
+	then
+	    echo "Blocking violations found - commit canceled." 
+	else
+		echo "Do you wish to install this program?"
+		select yn in "Yes" "No"; do
+			case $yn in
+				Yes ) make install; break;;
+				No ) exit;;
+			esac
+		done
+	fi
+	
 fi
 
+function ask_yes_or_no() {
+    read -p "$1 ([y]es or [N]o): "
+    case $(echo $REPLY | tr '[A-Z]' '[a-z]') in
+        y|yes) echo "yes" ;;
+        *)     echo "no" ;;
+    esac
+}

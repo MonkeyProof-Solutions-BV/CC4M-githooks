@@ -1,4 +1,4 @@
-function exitFlag = precommit_example(filestring, configFile, severityBoundary, doOpenReport, isVerbose)
+function exitFlag = precommit_example(filestring, configFile, options)
     % PRECOMMIT_EXAMPLE The MATLAB side of the Git pre-commit hook example.
     %
     % Requires CC4M >= v2.18.2
@@ -17,11 +17,14 @@ function exitFlag = precommit_example(filestring, configFile, severityBoundary, 
 
     arguments
         filestring                  char
-        configFile                  char        = 'MonkeyProofMATLABCodingStandard'
-        severityBoundary    (1,1)   double      = 3
-        doOpenReport        (1,1)   logical     = true
-        isVerbose           (1,1)   logical     = true
+        configFile                  char                 = 'MonkeyProofMATLABCodingStandard'
+        options.SeverityBlock       (1, 1)   double      = 1
+        options.SeverityAllow       (1, 1)   double      = 8
+        options.DoOpenReport        (1, 1)   logical     = true
+        options.OpenReportInMatlab  (1, 1)   logical     = false
+        options.IsVerbose           (1, 1)   logical     = true
     end
+
 
     exitFlag = 1; %#ok<NASGU> initialize
     files    = strsplit(filestring, ',');
@@ -33,37 +36,39 @@ function exitFlag = precommit_example(filestring, configFile, severityBoundary, 
 
     %% When to fail.
     % Here define when to fail for this repository.
-    failCondition = cc4mSummary.Results.NrViolations > 0;               % violations found
+    AllowCondition = cc4mSummary.Results.NrViolations > 0;
+    BlockCondition = any([cc4mSummary.Results.PerCheck.SeverityLevel]) > options.SeverityBlock;
     
     if isVerbose
         disp(cc4mReportUrl)
         disp(cc4mSummary.Results)
     end
 
-    if failCondition
+    if ~BlockCondition && ~AllowCondition
+        % All fine.
+        exitFlag = 0;
+    else
 
         if doOpenReport
-            % TODO: Make sure files analyzed are on the path in order to make the links from the report work.
+            if options.OpenReportInMatlab
+                % TODO: Make sure files analyzed are on the path in order to make the links from the report work.
 
-            folders = {}; %#ok<NASGU> % TODO: Cell array with project path.
-            % Command to adapt the path.
-            %addpathCmd = ['addpath(''', strjoin(folders, ''', '''), ''')'];
+                folders = {}; %#ok<NASGU> % TODO: Cell array with project path.
+                % Command to adapt the path.
+                %addpathCmd = ['addpath(''', strjoin(folders, ''', '''), ''')'];
 
-            web(cc4mReportUrl);
+                web(cc4mReportUrl);
+            else
+                web(cc4mReportUrl,  '-browser');
+            end
         end
 
-        drawnow()
-        answer = questdlg('One or more coding guideline violations have been found in the staged files. Do you want to proceed with the commit anyway?','Violations Detected – Proceed with Commit?');
-        switch answer
-            case 'Yes'
-                disp('Warning: Coding guideline violations were found, but the commit proceeded due to override.')
-                exitFlag = 0;
-
-            otherwise
-                exitFlag = 1;
+        if BlockCondition
+            % Errors found.
+            exitFlag = 1;
+        else
+            % AllowCondition == true
+            exitFlag = 2;
         end
-    else
-        % No code issues found.
-        exitFlag = 0;
     end
 end

@@ -10,17 +10,21 @@ function varargout = install(usePPI)
         usePPI logical = true
     end
 
-    arguments (Output)
-        hasFailed
-        msg
-    end
-
     % Define locations.
     [~, versionInfo] = monkeyproof.cc4m.utils.getEnvironmentInfo();
     targetDir        = fullfile(userpath, 'cc4m', 'python', versionInfo.MATLABVersionNr);
     activateCall     = fullfile(targetDir, 'Scripts', 'activate');
     [~, ~]           = mkdir(targetDir);
     pythonDir        = fullfile(pwd, '..', 'cc4m_githooks');
+
+    % Make sure CC4M is installed
+    if isempty(ver('cc4m'))
+        error("GITHOOKS:INSTALL:NO_CC4M", "CC4M not installed.\n")
+    elseif verLessThan('cc4m', '2.21')
+        error("GITHOOKS:INSTALL:CC4M_TO_OLD", "Could not install the CC4M integration:\n")
+    else
+        disp('CC4M available')
+    end
 
     % Make sure Python environment available.
     disp("Checking if Python is available.")
@@ -70,25 +74,26 @@ function varargout = install(usePPI)
         [hasFailed, msg] = system(pipCommand);
 
         if hasFailed
-            disp("CC4M integration could not be installed!")
-            disp(msg)
+            error("GITHOOKS:INSTALL:NO_CC4M_GITHOOKS", "Could not install the CC4M integration:\n\n  %s\n", msg)
         else
             disp("CC4M integration installed.")
 
             pipCommand = "" + activateCall  + " && " + "pip list";
             [hasFailed, msg] = system(pipCommand);
         end
+    else
+        error("GITHOOKS:INSTALL:NO_ENGINE", "Could not install the matlabengine:\n\n  %s\n", msg)
     end
 
     % Install Required MATLAB files in the default userpath.
-    if ~hasFailed
-        disp("Now adding CC4M MATLAB code.")
-        destFolder = monkeyproof.cc4m.utils.userpath();
-        [isOk, msg] = copyfile('precommit_example.m', destFolder, 'f');
-    end
+    disp("Now adding CC4M MATLAB code.")
+    destFolder = monkeyproof.cc4m.utils.userpath();
+    [isOk, msg] = copyfile('precommit_example.m', destFolder, 'f');
+
 
     for iOut = 1:nargout
         switch iOut
+            
             case 1
                 varargout{1} = isOk;
 

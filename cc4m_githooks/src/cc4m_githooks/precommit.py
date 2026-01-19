@@ -46,8 +46,11 @@ def run(envDir, matlabExe, gitRootFolder, matlabCmd):
 
     if exitFlag == 1:
         return 1
+    elif exitFlag == 2:
+        return 2
     else:
         return 0
+        
 if __name__ == "__main__":
    exitFlag = run(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
    sys.exit(exitFlag)
