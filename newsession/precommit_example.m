@@ -30,8 +30,9 @@ function precommit_example(filestring, configFile, severityBoundary, doOpenRepor
         'configFile',       configFile, ...
         'runSeverities',    severityBoundary);
 
-    %% When to fail.
+    %% When to fail
     % Here define when to fail for this repository.
+
     failCondition = cc4mSummary.Results.NrViolations > 0;               % violations found
 
     if isVerbose
@@ -42,7 +43,7 @@ function precommit_example(filestring, configFile, severityBoundary, doOpenRepor
     if failCondition
 
         if doOpenReport
-            % Make sure files analyzed are on the path in order to make the links from the report work.
+            % Make sure files analysed are on the path in order to make the links from the report work.
 
             folders = {}; % Cell array with project path.
 

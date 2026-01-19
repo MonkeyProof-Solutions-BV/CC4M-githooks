@@ -2,16 +2,48 @@
 
 To maintain high code quality in your repository, it's helpful to run a static code checker before committing changes. In this repository, files are stored for automating a CC4M run on your MATLAB code using a pre-commit hook.
 
-## Block the commit
-The root folder of the repositry contains the files as explained in a [blog](https://monkeyproofsolutions.nl/about/blog/cc4m/using-githooks) on this topic.
+We'll integrate CC4M (Code Checker for MATLAB) into a Git pre-commit hook to automatically verify code compliance against the guidelines before allowing it to be committed. Here’s how it works:
 
-* [pre-commit](pre-commit) shell script executed by Git.
-* [precommit_example.m](precommit_example.m) MATLAB function as called from the shell script.
+* When you commit changes, the pre-commit hook first runs CC4M.
+* If no issues are found, the commit proceeds.
+* If violations are detected, the report is shown and using a dialog the commit can either be canceled, or allowed anyway.
 
-## Block, but allow to overrule
-The folder [with_proceed_dialog](with_proceed_dialog) contains derivatives from the files above, that implement a question dialog in the MATLAB script to allow for committing the changes, regardless of the violations.
 
+## Prerequisits
+In order to be able to use this pre-commit hook, your system needs:
+* MATLAB
+* CC4M
+* Python (supported by used MATLAB installation, see [link](https://www.mathworks.com/support/requirements/python-compatibility.html).
+* Git
+
+## Installation
+
+By default, the pre-commit hook runs CC4M in a dedicated MATLAB session that remains active. Whenever files need to be checked, CC4M is executed within this session via Python using the `matlabengine` module. To support this workflow, a Python environment with the [`matlabengine`](https://pypi.org/project/matlabengine/) package installed is required.
+
+Because `matlabengine` is tied to a specific MATLAB release—and the code must be accessible from the pre-commit hook—an installation procedure is provided:
+
+1. Clone this repository.
+2. Open MATLAB with CC4M installed.
+3. In the local working copy, navigate to the matlab folder.
+4. Run `install.m`, which:
+    - Creates a Python environment at `fullfile(userpath(), 'cc4m', 'python')`
+    - Installs the `matlabengine` package from PyPI
+    - Adds the MATLAB files to `userpath()`
+5. Copy the `pre-commit` file to the `./.git/hooks` directory of each local repository where you want to enable the `pre-commit action.`
+
+## Use
+
+After the installation procedure, every commit will trigger a CC4M run on all MATLAB files that are part of the commit. The first check takes more time, as a new MATLAB session is started using the `matlabengine`. This session will be reused with the following commits.
+
+When all checks pass, the files will be committed. In case of violations, you can still enforce a commit; just select "Yes" from te dialog that pops up.
+
+![alt text](proceed-dialog.png)
+
+### Connect with open development session
+
+You can reuse the MATLAB session you have open already, by sharing the engine with the name "CC4M_MATLAB_SESSION" or runnning `cc4m_connectpy()` .
 
 # Links
 
-* Details explanation in [blog](https://monkeyproofsolutions.nl/about/blog/cc4m/using-githooks)
+* Repository on GitHub:  [https://github.com/MonkeyProof-Solutions-BV/CC4M-githooks](https://github.com/MonkeyProof-Solutions-BV/CC4M-githooks)
+* Detailed explanation in [blog](https://monkeyproofsolutions.nl/about/blog/cc4m/using-githooks)
