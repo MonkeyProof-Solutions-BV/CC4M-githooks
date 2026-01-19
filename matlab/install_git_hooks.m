@@ -1,6 +1,19 @@
-function varargout = install(usePPI)
-    % INSTALL hooks support for GIT
+function varargout = install_git_hooks(usePPI)
+    % INSTALL_GIT_HOOKS install hooks support for GIT
     %
+    % Installation procedure performs following tasks:
+    % 
+    % # Checks installation of CC4M
+    % # Checks availablity of Python within MATLAB
+    % # Create Python envoronment in CC4M subfolder of the default USERPATH folder
+    % # 
+    % Syntax:
+    %
+    %   install_git_hooks()
+    %
+    % In case shipped Python code for the matlabengine shall be installed, instead of the package on PyPi.org use:
+    %
+    %   install_git_hooks(usePPI=false) 
 
     % Copyright 2026 MonkeyProof Solutions BV
 
@@ -37,6 +50,8 @@ function varargout = install(usePPI)
         msg = "No Python installed or available via MATLAB.";
     else
         % Python found.
+
+        fprintf(1, "Python %s found.", pe.Version);
         pyCmd = pe.Executable;
 
         % Test if environment already exists.

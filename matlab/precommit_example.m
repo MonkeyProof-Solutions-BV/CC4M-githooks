@@ -4,7 +4,7 @@ function exitFlag = precommit_example(filestring, configFile, options)
     % Requires CC4M >= v2.18.2
     %
     % Inputs - required:
-    %  
+    %
     % * filestring       (char)      Comma-separated list of all the files to be checked.
     %
     % Inputs - optional
@@ -25,20 +25,20 @@ function exitFlag = precommit_example(filestring, configFile, options)
         options.IsVerbose           (1, 1)   logical     = true
     end
 
-
     exitFlag = 1; %#ok<NASGU> initialize
     files    = strsplit(filestring, ',');
 
+    % run CC4M
     [cc4mReportUrl, cc4mSummary] = monkeyproof.cc4m.start(...
         'file',             files, ...
         'configFile',       configFile, ...
         'runSeverities',    severityBoundary);
 
-    %% When to fail.
+    %% When to block or fail.
     % Here define when to fail for this repository.
     AllowCondition = cc4mSummary.Results.NrViolations > 0;
     BlockCondition = any([cc4mSummary.Results.PerCheck.SeverityLevel]) > options.SeverityBlock;
-    
+
     if isVerbose
         disp(cc4mReportUrl)
         disp(cc4mSummary.Results)
@@ -48,6 +48,14 @@ function exitFlag = precommit_example(filestring, configFile, options)
         % All fine.
         exitFlag = 0;
     else
+
+        if BlockCondition
+            % Errors found.
+            exitFlag = 1;
+        else
+            % AllowCondition == true
+            exitFlag = 2;
+        end
 
         if doOpenReport
             if options.OpenReportInMatlab
@@ -62,13 +70,6 @@ function exitFlag = precommit_example(filestring, configFile, options)
                 web(cc4mReportUrl,  '-browser');
             end
         end
-
-        if BlockCondition
-            % Errors found.
-            exitFlag = 1;
-        else
-            % AllowCondition == true
-            exitFlag = 2;
-        end
+        
     end
 end
