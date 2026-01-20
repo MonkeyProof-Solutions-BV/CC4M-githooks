@@ -69,7 +69,7 @@ function varargout = install_git_hooks(usePPI)
             if usePPI
                 % From Python Package Index.
                 pipCommand = pipCommand + ...
-                    " && " + "pip install matlabengine>=" + versionInfo.MATLABVersionNr;
+                    " && " + "pip install matlabengine>=" + versionInfo.MATLABVersionNr + " --no-cache-dir";
             else
                 % From local files.
                 pipCommand = pipCommand + ...
@@ -85,7 +85,7 @@ function varargout = install_git_hooks(usePPI)
     if ~hasFailed
         disp("MATLAB engine installed. Now adding CC4M integration.")
 
-        pipCommand = activateCall  + " && " + "pip install " +pythonDir;
+        pipCommand = activateCall  + " && " + "pip install " + pythonDir + " --no-cache-dir";
         [hasFailed, msg] = system(pipCommand);
 
         if hasFailed

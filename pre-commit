@@ -3,7 +3,13 @@
 # A hook script to verify MATLAB code using CC4M.
 # Called by "git commit" with no arguments.
 
-## Configurable settings
+###################################################################################################
+# 			                    			                 								      #
+# 			                   			Configurable settings								      #
+#                            			Adapt to your situation      						      #
+# 			                    			                 								      #
+###################################################################################################
+
 # Location of the MATLAB installatio to use.
 matlabRoot="/c/Program Files/MATLAB/R2025b"
 
@@ -13,10 +19,78 @@ configFile=MonkeyProofMATLABCodingStandard
 # List of extensions to include.
 supportedExtensions="\.m$|\.mlx$|\.slx$|\.mlapp$|\.mdl$"
 
-## Generic settings
+# Only rules with severity level equal to or higher than "severityAllow" will be included.
+# Violations of rules with severity level equal to or higher than "severityBlock" will block the commit.
+severityBlock=3
+severityAllow=10
+
+# License-related settings
+# In case of a floating license:
+#export MONKEYPROOF_FLOATING_LICENSE_SERVER=<server:port>
+# In case of a license file:
+#export MONKEYPROOF_LICENSE_FILE_FOLDER=<folder where license file is saved.>
+
+###################################################################################################
+# 			                    			                 								      #
+# 			                    			Generic settings								      #
+#                            			Only adapt when you are sure						      #
+# 			                    			                 								      #
+###################################################################################################
+ 
 matlabExe="$matlabRoot/bin/matlab"
-matlabInitCmd="addpath(monkeyproof.cc4m.utils.userpath())";
-envdir=$USERPROFILE/Documents/MATLAB/cc4m/python/25.2
+matlabInitCmd="addpath(monkeyproof.cc4m.utils.userpath());"
+if [[ "$matlabRoot" == *"R2026a" ]];then 
+	subdir="26.1"
+elif [[ "$matlabRoot" == *"R2025b" ]];then 
+	subdir="25.2"
+elif [[ "$matlabRoot" == *"R2025a" ]];then 
+	subdir="25.1"
+elif [[ "$matlabRoot" == *"R2024b" ]];then 
+	subdir="24.2"
+elif [[ "$matlabRoot" == *"R2024a" ]];then 
+	subdir="23.2"
+elif [[ "$matlabRoot" == *"R2023b" ]];then 
+	subdir="23.1"
+elif [[ "$matlabRoot" == *"R2023a" ]];then 
+	subdir="9.14"	
+elif [[ "$matlabRoot" == *"R2022b" ]];then 
+	subdir="9.13"
+elif [[ "$matlabRoot" == *"R2022a" ]];then 
+	subdir="9.12"	
+elif [[ "$matlabRoot" == *"R2021b" ]];then 
+	subdir="9.11"
+elif [[ "$matlabRoot" == *"R2021a" ]];then 
+	subdir="9.10"	
+elif [[ "$matlabRoot" == *"R2020b" ]];then 
+	subdir="9.9"
+elif [[ "$matlabRoot" == *"R2020a" ]];then 
+	subdir="9.8"		
+else
+	subdir="25.2"
+fi
+
+
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        homeFolder=$HOME
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+        # Mac OSX
+		homeFolder=$home
+elif [[ "$OSTYPE" == "cygwin" ]]; then
+        # POSIX compatibility layer and Linux environment emulation for Windows
+		homeFolder=$USERPROFILE
+elif [[ "$OSTYPE" == "msys" ]]; then
+        # Lightweight shell and GNU utilities compiled for Windows (part of MinGW)
+		homeFolder=$USERPROFILE
+elif [[ "$OSTYPE" == "freebsd"* ]]; then
+        homeFolder=$HOME
+else
+        # Unknown - assume linux
+		homeFolder=$HOME
+fi
+
+
+envdir=$homeFolder/Documents/MATLAB/cc4m/python/$subdir
+e
 
 # Git repository root folder.
 gitRootFolder=$(git rev-parse --show-toplevel)

@@ -30,14 +30,16 @@ Because `matlabengine` is tied to a specific MATLAB release—and the code must 
     - Installs the `matlabengine` package from PyPI
     - Adds the MATLAB files to `userpath()`
 5. Copy the `pre-commit` file to the `./.git/hooks` directory of each local repository where you want to enable the `pre-commit action.`
+6. Adapt `pre-commit` to make sure:
+    - Correct MATLAB version is used
+    - CC4M License is available.
 
 ## Use
 
 After the installation procedure, every commit will trigger a CC4M run on all MATLAB files that are part of the commit. The first check takes more time, as a new MATLAB session is started using the `matlabengine`. This session will be reused with the following commits.
 
-When all checks pass, the files will be committed. In case of violations, you can still enforce a commit; just select "Yes" from te dialog that pops up.
-
-![alt text](proceed-dialog.png)
+When all checks pass, the files will be committed. In case of violations, there are blocking violations and violations that optionally are allowed. In the first case - the commit is cancelled automatically, in the latter you can still commit, by answering "y" to the following question (as displayed in your Git Client) "Violations found, do you still want to commit? (y/N)".
+ 
 
 ### Connect with open development session
 

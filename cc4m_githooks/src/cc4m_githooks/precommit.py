@@ -18,7 +18,7 @@ def run(envDir, matlabExe, gitRootFolder, matlabCmd):
     if ENG_ID in names:
         print ("engine found")
     else:
-        cmd = '"' + matlabExe + '"' + '-nodesktop -nodisplay -r "matlab.engine.shareEngine(' + "'CC4M_MATLAB_SESSION'" + ')"'
+        cmd = '"' + matlabExe + '"' + ' -nodesktop -minimize -r "matlab.engine.shareEngine(' + "'CC4M_MATLAB_SESSION'" + ')"'
         print (cmd)
         result = subprocess.call(cmd)
         print(result)

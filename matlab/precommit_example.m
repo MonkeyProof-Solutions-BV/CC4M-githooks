@@ -9,9 +9,12 @@ function exitFlag = precommit_example(filestring, configFile, options)
     %
     % Inputs - optional
     % * configFile       (char)      (File)name of CC4M configuration (default: 'MonkeyProofMATLABCodingStandard').
-    % * severityBoundary (double)    Lowest severity that blocks a commit (default:3).
-    % * doOpenReport     (boolean)   If true (default), opens a the HTML report of the detected violations.
-    % * isVerbose        (boolean)   If true (default), shows some more information in the shell.
+    %
+    % Inputs - named
+    % * SeverityBlock    (double)    Lowest severity that blocks a commit (default:3).
+    % * SeverityAllow    (double)    Lowest severity that can block a commit (default:8).
+    % * DoOpenReport     (boolean)   If true (default), opens a the HTML report of the detected violations.
+    % * IsVerbose        (boolean)   If true (default), shows some more information in the shell.
 
     % Copyright 2026 MonkeyProof Solutions BV
 
@@ -21,7 +24,7 @@ function exitFlag = precommit_example(filestring, configFile, options)
         options.SeverityBlock       (1, 1)   double      = 1
         options.SeverityAllow       (1, 1)   double      = 8
         options.DoOpenReport        (1, 1)   logical     = true
-        options.OpenReportInMatlab  (1, 1)   logical     = false
+        options.OpenReportInMatlab  (1, 1)   logical     = true
         options.IsVerbose           (1, 1)   logical     = true
     end
 
@@ -32,14 +35,14 @@ function exitFlag = precommit_example(filestring, configFile, options)
     [cc4mReportUrl, cc4mSummary] = monkeyproof.cc4m.start(...
         'file',             files, ...
         'configFile',       configFile, ...
-        'runSeverities',    severityBoundary);
+        'runSeverities',    options.SeverityAllow);
 
     %% When to block or fail.
     % Here define when to fail for this repository.
     AllowCondition = cc4mSummary.Results.NrViolations > 0;
     BlockCondition = any([cc4mSummary.Results.PerCheck.SeverityLevel]) > options.SeverityBlock;
 
-    if isVerbose
+    if options.IsVerbose
         disp(cc4mReportUrl)
         disp(cc4mSummary.Results)
     end
@@ -57,7 +60,7 @@ function exitFlag = precommit_example(filestring, configFile, options)
             exitFlag = 2;
         end
 
-        if doOpenReport
+        if options.DoOpenReport
             if options.OpenReportInMatlab
                 % TODO: Make sure files analyzed are on the path in order to make the links from the report work.
 
