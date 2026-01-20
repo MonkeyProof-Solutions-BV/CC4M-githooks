@@ -3,17 +3,18 @@ import subprocess
 import sys
 import os
 import time
+import io
 
 print(os.environ['PYTHONPATH'])
 
 ENG_ID = "CC4M_MATLAB_SESSION"
 
 def run(envDir, matlabExe, gitRootFolder, matlabCmd):
+
+    out = io.StringIO()
+    err = io.StringIO()
+
     names = matlab.engine.find_matlab()
-    print(names)
-    print(envDir)
-    print(matlabExe)
-    print(gitRootFolder)
     
     if ENG_ID in names:
         print ("engine found")
@@ -41,17 +42,50 @@ def run(envDir, matlabExe, gitRootFolder, matlabCmd):
     eng.eval("addpath(monkeyproof.cc4m.utils.userpath())")
 
     # Perform the check.
-    exitFlag = eng.eval(matlabCmd)
+    print ("call CC4M")
+    try: 
+        print (matlabCmd)
+        exitFlag = eng.eval(matlabCmd,stdout=out,stderr=err)
+        print (exitFlag)
+        print (int(exitFlag))
+        print (type(exitFlag))
+        print ("CC4M done")
+
+    except "MatlabExecutionError":
+        exitFlag = 11
+        print("MATLAB error")
+    
+    except "RejectedExecutionError":
+        exitFlag = 12
+        print("MATLAB engine error")
+    
+    except "SyntaxError":
+        exitFlag = 13
+        print("MATLAB syntax error")
+    
+    except "TypeError":
+        exitFlag = 14
+        print("MATLAB type error")
+
+    finally:
+        print(out.getvalue())
+        print(err.getvalue())
+
+    print ("leaving CC4M")
+    print()
     eng.quit()
 
-    if exitFlag == 1:
-        return 1
-    elif exitFlag == 2:
-        return 2
-    else:
-        return 0
+    return int(exitFlag)
         
 if __name__ == "__main__":
-   exitFlag = run(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
-   sys.exit(exitFlag)
+
+    print ("inputs")
+    print(sys.argv[0])  
+    print(sys.argv[1])
+    print(sys.argv[2])
+    print(sys.argv[3])
+    print(sys.argv[4])
+    print ("inputs")
+    exitFlag = run(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+    sys.exit(exitFlag)
 

@@ -30,9 +30,10 @@ Because `matlabengine` is tied to a specific MATLAB release—and the code must 
     - Installs the `matlabengine` package from PyPI
     - Adds the MATLAB files to `userpath()`
 5. Copy the `pre-commit` file to the `./.git/hooks` directory of each local repository where you want to enable the `pre-commit action.`
-6. Adapt `pre-commit` to make sure:
+6. Adapt the repository-specific `pre-commit` to make sure:
     - Correct MATLAB version is used
     - CC4M License is available.
+    - The desired blocking levels are configured.
 
 ## Use
 

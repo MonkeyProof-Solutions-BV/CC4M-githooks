@@ -28,51 +28,58 @@ function exitFlag = precommit_example(filestring, configFile, options)
         options.IsVerbose           (1, 1)   logical     = true
     end
 
-    exitFlag = 1; %#ok<NASGU> initialize
-    files    = strsplit(filestring, ',');
+    try
+        exitFlag = 1; %#ok<NASGU> initialize
+        files    = strsplit(filestring, ',');
 
-    % run CC4M
-    [cc4mReportUrl, cc4mSummary] = monkeyproof.cc4m.start(...
-        'file',             files, ...
-        'configFile',       configFile, ...
-        'runSeverities',    options.SeverityAllow);
+        % run CC4M
+        [cc4mReportUrl, cc4mSummary] = monkeyproof.cc4m.start(...
+            'file',             files, ...
+            'configFile',       configFile, ...
+            'runSeverities',    options.SeverityAllow);
 
-    %% When to block or fail.
-    % Here define when to fail for this repository.
-    AllowCondition = cc4mSummary.Results.NrViolations > 0;
-    BlockCondition = any([cc4mSummary.Results.PerCheck.SeverityLevel]) > options.SeverityBlock;
+        %% When to block or fail.
+        % Here define when to fail for this repository.
+        AllowCondition = cc4mSummary.Results.NrViolations > 0;
+        BlockCondition = any([cc4mSummary.Results.PerCheck.SeverityLevel] <= options.SeverityBlock);
 
-    if options.IsVerbose
-        disp(cc4mReportUrl)
-        disp(cc4mSummary.Results)
-    end
-
-    if ~BlockCondition && ~AllowCondition
-        % All fine.
-        exitFlag = 0;
-    else
-
-        if BlockCondition
-            % Errors found.
-            exitFlag = 1;
-        else
-            % AllowCondition == true
-            exitFlag = 2;
+        if options.IsVerbose
+            disp(cc4mReportUrl)
+            disp(cc4mSummary.Results)
         end
 
-        if options.DoOpenReport
-            if options.OpenReportInMatlab
-                % TODO: Make sure files analyzed are on the path in order to make the links from the report work.
+        if ~BlockCondition && ~AllowCondition
+            % All fine.
+            exitFlag = 0;
+        else
 
-                folders = {}; %#ok<NASGU> % TODO: Cell array with project path.
-                % Command to adapt the path.
-                %addpathCmd = ['addpath(''', strjoin(folders, ''', '''), ''')'];
-
-                web(cc4mReportUrl);
+            if BlockCondition
+                % Errors found.
+                exitFlag = 1;
             else
-                web(cc4mReportUrl,  '-browser');
+                % AllowCondition == true
+                exitFlag = 2;
+            end
+
+            if options.DoOpenReport
+                if options.OpenReportInMatlab
+                    % TODO: Make sure files analyzed are on the path in order to make the links from the report work.
+
+                    folders = {}; %#ok<NASGU> % TODO: Cell array with project path.
+                    % Command to adapt the path.
+                    %addpathCmd = ['addpath(''', strjoin(folders, ''', '''), ''')'];
+
+                    web(cc4mReportUrl);
+                else
+                    web(cc4mReportUrl,  '-browser');
+                end
             end
         end
-        
+    catch ME
+        disp (ME. message)
+        disp ("---------------------------------------------------------")
+        disp (ME.getReport)
+        disp ("---------------------------------------------------------")
+        exitFlag = 10;
     end
 end
