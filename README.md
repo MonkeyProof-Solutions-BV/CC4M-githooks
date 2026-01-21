@@ -11,9 +11,9 @@ We'll integrate CC4M (Code Checker for MATLAB) into a Git pre-commit hook to aut
 
 ## Prerequisits
 In order to be able to use this pre-commit hook, your system needs:
-* MATLAB
-* CC4M
-* Python (supported by used MATLAB installation, see [link](https://www.mathworks.com/support/requirements/python-compatibility.html).
+* MATLAB (2020b or later)
+* CC4M (minimum 2.21)
+* Python (supported by used MATLAB installation, see [link](https://www.mathworks.com/support/requirements/python-compatibility.html). Minimum Python version 3.8.
 * Git
 
 ## Installation

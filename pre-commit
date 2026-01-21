@@ -139,7 +139,7 @@ echo " "
 
 # Call to CC4M.
 
-matlabCmd="precommit_example('$gitFullFiles', '$configFile', SeverityBlock=$severityBlock, SeverityAllow=$severityAllow, ChangedOnlyScope=$changedOnlyScope )"
+matlabCmd="precommit_example('$gitFullFiles', '$configFile', 'SeverityBlock', $severityBlock, 'SeverityAllow', $severityAllow, 'ChangedOnlyScope', \"$changedOnlyScope\" )"
 
 # Source - https://stackoverflow.com/a/26827443
 # Posted by gniourf_gniourf, modified by community. See post 'Timeline' for change history

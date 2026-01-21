@@ -39,11 +39,12 @@ function exitFlag = precommit_example(filestring, configFile, options)
             'configFile',       configFile, ...
             '-changedOnly', ...
             'runSeverities',    options.SeverityAllow, ...
-            'changedOnlyScope', options.ChangedOnlyScope);
+            'changedOnlyScope', char(options.ChangedOnlyScope));
 
         %% When to block or fail.
         % Here define when to fail for this repository.
         AllowCondition = cc4mSummary.Results.NrViolations > 0;
+
         if AllowCondition
             BlockCondition = any([cc4mSummary.Results.PerCheck.SeverityLevel] <= options.SeverityBlock);
         else
@@ -59,7 +60,6 @@ function exitFlag = precommit_example(filestring, configFile, options)
             % All fine.
             exitFlag = 0;
         else
-
             if BlockCondition
                 % Errors found.
                 exitFlag = 1;
@@ -73,8 +73,6 @@ function exitFlag = precommit_example(filestring, configFile, options)
                     % TODO: Make sure files analyzed are on the path in order to make the links from the report work.
 
                     folders = {}; %#ok<NASGU> % TODO: Cell array with project path.
-                    % Command to adapt the path.
-                    %addpathCmd = ['addpath(''', strjoin(folders, ''', '''), ''')'];
 
                     web(cc4mReportUrl);
                 else

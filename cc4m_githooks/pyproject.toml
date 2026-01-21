@@ -5,7 +5,7 @@ description = "A module for integration of CC4M with GIT pre-commit hooks using 
 authors = [
     { name = "MonkeyProof Solutions BV", email = "info@monkeyproofsolutions.nl" },
 ]
-license = "MIT"
+license = {file = "LICENSE.txt"}
 readme = { "file" = "README.md", "content-type" = "text/markdown" }
 # Please consult https://pypi.org/classifiers/ for a full list.
 classifiers = [
