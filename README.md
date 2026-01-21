@@ -34,6 +34,10 @@ Because `matlabengine` is tied to a specific MATLAB release—and the code must 
     - Correct MATLAB version is used
     - CC4M License is available.
     - The desired blocking levels are configured.
+    - The desired 'changedOnlyScope' defined. 
+        - `file` (When a file has changes, violations in the whole file are reported.
+        - `block` When a *function*, *properties* or *methods* block has changes, violations in the whole block are reported.
+        - `line` Only violations on the changed lines are reported[^lines].
 
 ## Use
 

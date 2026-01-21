@@ -26,6 +26,7 @@ function exitFlag = precommit_example(filestring, configFile, options)
         options.DoOpenReport        (1, 1)   logical     = true
         options.OpenReportInMatlab  (1, 1)   logical     = true
         options.IsVerbose           (1, 1)   logical     = true
+        options.ChangedOnlyScope    (1, 1)   string      = "line"
     end
 
     try
@@ -36,12 +37,18 @@ function exitFlag = precommit_example(filestring, configFile, options)
         [cc4mReportUrl, cc4mSummary] = monkeyproof.cc4m.start(...
             'file',             files, ...
             'configFile',       configFile, ...
-            'runSeverities',    options.SeverityAllow);
+            '-changedOnly', ...
+            'runSeverities',    options.SeverityAllow, ...
+            'changedOnlyScope', options.ChangedOnlyScope);
 
         %% When to block or fail.
         % Here define when to fail for this repository.
         AllowCondition = cc4mSummary.Results.NrViolations > 0;
-        BlockCondition = any([cc4mSummary.Results.PerCheck.SeverityLevel] <= options.SeverityBlock);
+        if AllowCondition
+            BlockCondition = any([cc4mSummary.Results.PerCheck.SeverityLevel] <= options.SeverityBlock);
+        else
+            BlockCondition = false;
+        end
 
         if options.IsVerbose
             disp(cc4mReportUrl)

@@ -24,6 +24,9 @@ supportedExtensions="\.m$|\.mlx$|\.slx$|\.mlapp$|\.mdl$"
 severityBlock=0
 severityAllow=10
 
+# Scope of the changes that will be checked. Can "file", "block" or "line"
+changedOnlyScope="line"
+
 # License-related settings
 # In case of a floating license:
 #export MONKEYPROOF_FLOATING_LICENSE_SERVER=<server:port>
@@ -134,7 +137,7 @@ echo " "
 
 # Call to CC4M.
 
-matlabCmd="precommit_example('$gitFullFiles', '$configFile', SeverityBlock=$severityBlock, SeverityAllow=$severityAllow)"
+matlabCmd="precommit_example('$gitFullFiles', '$configFile', SeverityBlock=$severityBlock, SeverityAllow=$severityAllow, ChangedOnlyScope=$changedOnlyScope )"
 
 # Source - https://stackoverflow.com/a/26827443
 # Posted by gniourf_gniourf, modified by community. See post 'Timeline' for change history
