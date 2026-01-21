@@ -13,8 +13,10 @@
 # Location of the MATLAB installatio to use.
 matlabRoot="/c/Program Files/MATLAB/R2025b"
 
-# From the predefined configurations, use the "MonkeyProof Coding Standard for MATLAB".
+# Configuration file
+# Default: "MonkeyProof Coding Standard for MATLAB" (from the predefined configurations).
 configFile=MonkeyProofMATLABCodingStandard
+#configFile="c:\myfolder\myconf.xml"
 
 # List of extensions to include.
 supportedExtensions="\.m$|\.mlx$|\.slx$|\.mlapp$|\.mdl$"
@@ -163,7 +165,7 @@ exec < /dev/tty
 if [ $bret -eq 0 ]
 then
     echo "Files checked and ok."
-    exit 1
+    exit 0
 else
 	echo "Returned $bret"
     if  [ $bret -eq 1 ]
