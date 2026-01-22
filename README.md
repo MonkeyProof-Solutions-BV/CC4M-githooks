@@ -24,12 +24,13 @@ Because `matlabengine` is tied to a specific MATLAB release—and the code must 
 
 1. Clone this repository.
 2. Open MATLAB with CC4M installed.
+3. Verify Python is availalbe using [`pyenv'](https://mathworks.com/help/matlab/ref/pyenv.html).  `pe = pyenv()` returns the current Python configuration. See the MATLAB documentation for this function on how to adapt the configuration - inclusing links to download Python.
 3. In the local working copy, navigate to the matlab folder.
-4. Run [`install_git_hooks.m`](matlab/install_git_hooks.m), which:
-    - Creates a Python environment at `fullfile(userpath(), 'cc4m', 'python')`
-    - Installs the `matlabengine` package from PyPI
-    - Adds the MATLAB files to `userpath()`
-5. Copy the `pre-commit` file to the `./.git/hooks` directory of each local repository where you want to enable the `pre-commit action.`
+4. Run [`install_git_hooks.m`](./matlab/install_git_hooks.m), which:
+    - creates a Python environment at `fullfile(userpath(), 'cc4m', 'python')`;
+    - installs the `matlabengine` package from PyPI;
+    - copies the MATLAB files from folder [./matlab/](./matlab/) to `userpath()`.
+5. Copy the [`pre-commit`](./pre-commit) file to the `./.git/hooks` directory of each local repository where you want to enable the `pre-commit action.`
 6. Adapt the repository-specific `pre-commit` to make sure:
     - Correct MATLAB version is used
     - CC4M License is available.
@@ -38,6 +39,12 @@ Because `matlabengine` is tied to a specific MATLAB release—and the code must 
         - `file` (When a file has changes, violations in the whole file are reported.
         - `block` When a *function*, *properties* or *methods* block has changes, violations in the whole block are reported.
         - `line` Only violations on the changed lines are reported[^lines].
+
+### Install hook without the use of Python
+
+The reason for using Python in the hook is performance: from Python the `matlabengine` can be used to connect with a MATLAB session that can stay open or even used in between the commits.         
+
+If for some reason direct calls to MATLAB are needed, release [v1.0.0](https://github.com/MonkeyProof-Solutions-BV/CC4M-githooks/releases/tag/v1.0.0) of the CC4M githooks is implemented without the Python intermediate layer. 
 
 ## Use
 
@@ -48,13 +55,7 @@ When all checks pass, the files will be committed. In case of violations, there 
 
 ### Connect with open development session
 
-You can reuse the MATLAB session you have open already, by sharing the engine with the name "CC4M_MATLAB_SESSION" or runnning `cc4m_connectpy()` .
-
-# Hook without use of Python
-
-The reason for using Python in the hook performance: from Python the `matlabengine ` can be used to connect with a MATLAB session that can stay open or even used in between the commits. 
-
-If for some reason direct calls to MATLAB are preferred, release [v1.0.0](https://github.com/MonkeyProof-Solutions-BV/CC4M-githooks/releases/tag/v1.0.0) of the CC4M githooks is implemented without the Python intermediate layer. 
+You can reuse the MATLAB session you have open already, by sharing the engine with the name "CC4M_MATLAB_SESSION" or runnning [`cc4m_connectpy()`](./matlab/cc4m_connectpy.m) .
 
 # Links
 
