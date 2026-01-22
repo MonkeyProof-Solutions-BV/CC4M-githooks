@@ -1,7 +1,7 @@
 function exitFlag = precommit_example(filestring, configFile, options)
     % PRECOMMIT_EXAMPLE The MATLAB side of the Git pre-commit hook example.
     %
-    % Requires CC4M >= v2.18.2
+    % Requires CC4M >= v2.21
     %
     % Inputs - required:
     %
