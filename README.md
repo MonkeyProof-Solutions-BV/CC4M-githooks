@@ -13,19 +13,19 @@ We'll integrate CC4M (Code Checker for MATLAB) into a Git pre-commit hook to aut
 In order to be able to use this pre-commit hook, your system needs:
 * MATLAB (2020b or later)
 * CC4M (minimum 2.21)
-* Python (supported by used MATLAB installation, see [link](https://www.mathworks.com/support/requirements/python-compatibility.html). Minimum Python version 3.8.
+* Python (supported by used MATLAB installation, see [link](https://www.mathworks.com/support/requirements/python-compatibility.html). The minimum Python version used for this implementation is 3.8.
 * Git
 
 ## Installation
 
-By default, the pre-commit hook runs CC4M in a dedicated MATLAB session that remains active. Whenever files need to be checked, CC4M is executed within this session via Python using the `matlabengine` module. To support this workflow, a Python environment with the [`matlabengine`](https://pypi.org/project/matlabengine/) package installed is required.
+By default, the pre-commit hook runs CC4M in a dedicated MATLAB session that remains active. Whenever files need to be checked, CC4M is executed within this session via Python using the `matlabengine` module. To support this workflow, a Python environment with the [`matlabengine`](https://pypi.org/project/matlabengine/) package installed is required. The installation procedure described below creates this environment.
 
 Because `matlabengine` is tied to a specific MATLAB release—and the code must be accessible from the pre-commit hook—an installation procedure is provided:
 
 1. Clone this repository.
 2. Open MATLAB with CC4M installed.
 3. In the local working copy, navigate to the matlab folder.
-4. Run `install.m`, which:
+4. Run [`install_git_hooks.m`](matlab/install_git_hooks.m), which:
     - Creates a Python environment at `fullfile(userpath(), 'cc4m', 'python')`
     - Installs the `matlabengine` package from PyPI
     - Adds the MATLAB files to `userpath()`
@@ -49,6 +49,12 @@ When all checks pass, the files will be committed. In case of violations, there 
 ### Connect with open development session
 
 You can reuse the MATLAB session you have open already, by sharing the engine with the name "CC4M_MATLAB_SESSION" or runnning `cc4m_connectpy()` .
+
+# Hook without use of Python
+
+The reason for using Python in the hook performance: from Python the `matlabengine ` can be used to connect with a MATLAB session that can stay open or even used in between the commits. 
+
+If for some reason direct calls to MATLAB are preferred, release [v1.0.0](https://github.com/MonkeyProof-Solutions-BV/CC4M-githooks/releases/tag/v1.0.0) of the CC4M githooks is implemented without the Python intermediate layer. 
 
 # Links
 
