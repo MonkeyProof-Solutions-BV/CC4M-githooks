@@ -17,7 +17,7 @@ The pre-commit process operates as follows:
    * **N** to cancel the commit to address the reported issues, or
    * **y** to proceed with the commit despite the detected violations.
 
-This mechanism helps enforce coding standards while still allowing controlled overrides when necessary.
+This mechanism helps enforce coding standards while still allowing controlled overrides when necessary. Note that not all Git clients allow for interaction. For example both the MATLAB-internal, and Tortoise Git clients do not allow interaction.
 
 
 ## Prerequisits
