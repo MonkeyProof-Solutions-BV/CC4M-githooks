@@ -1,0 +1,67 @@
+#!/bin/sh
+#
+# A hook script to verify MATLAB code using CC4M.
+# Called by "git commit" with no arguments.
+
+## Generic settings
+matlabRoot="/c/Program Files/MATLAB/R2025a"
+matlabExe="$matlabRoot/bin/matlab"
+
+# Only rules with sevirty level equal to or hight than "severityLevelBoundary" will be included.
+severityLevelBoundary=3
+
+# From the predefined configurations, use the "MonkeyProof Coding Standard for MATLAB".
+configFile=MonkeyProofMATLABCodingStandard
+
+# List of extensions to include.
+supportedExtensions="\.m$|\.mlx$|\.slx$|\.mlapp$|\.mdl$"
+
+# Git repository root folder.
+gitRootFolder=$(git rev-parse --show-toplevel)
+
+# Initialize variables.
+gitFullFiles=
+count=0
+
+## The hook
+# Loop over files to commit, just keep files to check.
+for file in $(git diff --cached --name-only --diff-filter=ACM); do
+  if echo "$file" | grep -qE "$supportedExtensions"; then
+    echo "$file contains MATLAB code."
+
+    if [ 1 -eq $count ]
+	then
+		gitFullFiles=''$gitFullFiles,''
+	fi
+
+	gitFullFiles=$gitFullFiles''"$gitRootFolder/$file"''
+	count=1
+  else
+	echo "$file not checked."
+  fi
+done
+
+if test $count -eq 0 
+then
+	echo "no MATLAB files to check"
+	exit 0
+fi
+
+echo "Checking MATLAB files"
+
+matlabOutput=$("$matlabExe" -batch "cd('$gitRootFolder'); precommit_example('$gitFullFiles', '$configFile', $severityLevelBoundary)")
+errorlevel=$?
+
+if test $errorlevel -eq 0
+then
+	echo ok
+	echo $matlabOutput
+	exit 0
+else
+	echo "Commit blocked: One or more files violate critical coding guidelines. Please review and resolve the reported issues before committing."
+	echo " "
+	echo "$matlabOutput"
+	
+	exit 1
+fi	
+

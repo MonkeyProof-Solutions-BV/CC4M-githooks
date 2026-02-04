@@ -1,0 +1,18 @@
+[project]
+name = "cc4m_githooks"
+version = "0.1.0"
+description = "A module for integration of CC4M with GIT pre-commit hooks using Python and the matlabengine."
+authors = [
+    { name = "MonkeyProof Solutions BV", email = "info@monkeyproofsolutions.nl" },
+]
+license = {file = "LICENSE.txt"}
+readme = { "file" = "README.md", "content-type" = "text/markdown" }
+# Please consult https://pypi.org/classifiers/ for a full list.
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+]
+keywords = ["CC4M", "MATLAB", "GIT"]
+dependencies = ["matlabengine"]

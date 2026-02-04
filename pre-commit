@@ -3,63 +3,195 @@
 # A hook script to verify MATLAB code using CC4M.
 # Called by "git commit" with no arguments.
 
-## Generic settings
-matlabRoot="/c/Program Files/MATLAB/R2025a"
-matlabExe="$matlabRoot/bin/matlab"
+###################################################################################################
+#                                                                                                 #
+#                                       Configurable settings                                     #
+#                                       Adapt to your situation                                   #
+#                                                                                                 #
+###################################################################################################
 
-# Only rules with severity level equal to or higher than "severityLevelBoundary" will be included.
-severityLevelBoundary=3
+# Location of the MATLAB installatio to use.
+matlabRoot="/c/Program Files/MATLAB/R2025b"
 
-# From the predefined configurations, use the "MonkeyProof Coding Standard for MATLAB".
+# Configuration file
+# Default: "MonkeyProof Coding Standard for MATLAB" (from the predefined configurations).
 configFile=MonkeyProofMATLABCodingStandard
+#configFile="c:\myfolder\myconf.xml"
 
 # List of extensions to include.
 supportedExtensions="\.m$|\.mlx$|\.slx$|\.mlapp$|\.mdl$"
 
-# GIT repository root folder.
+# Only rules with severity level equal to or higher than "severityAllow" will be included.
+# Violations of rules with severity level equal to or higher than "severityBlock" will block the commit.
+severityBlock=0
+severityAllow=10
+
+# Scope of the changes that will be checked. Can "file", "block" or "line"
+changedOnlyScope="file"
+
+# License-related settings
+# In case of a floating license:
+#export MONKEYPROOF_FLOATING_LICENSE_SERVER=<server:port>
+# In case of a license file:
+#export MONKEYPROOF_LICENSE_FILE_FOLDER=<folder where license file is saved.>
+
+###################################################################################################
+#                                                                                                 #
+#                                           Generic settings                                      #
+#                                       Only adapt when you are sure                              #
+#                                                                                                 #
+###################################################################################################
+verbose=0
+ 
+matlabExe="$matlabRoot/bin/matlab"
+matlabInitCmd="addpath(monkeyproof.cc4m.utils.userpath());"
+
+# Get the MATLAB version as used.
+if [[ "$matlabRoot" == *"R2026a" ]];then 
+    subdir="26.1"
+elif [[ "$matlabRoot" == *"R2025b" ]];then 
+    subdir="25.2"
+elif [[ "$matlabRoot" == *"R2025a" ]];then 
+    subdir="25.1"
+elif [[ "$matlabRoot" == *"R2024b" ]];then 
+    subdir="24.2"
+elif [[ "$matlabRoot" == *"R2024a" ]];then 
+    subdir="23.2"
+elif [[ "$matlabRoot" == *"R2023b" ]];then 
+    subdir="23.1"
+elif [[ "$matlabRoot" == *"R2023a" ]];then 
+    subdir="9.14"   
+elif [[ "$matlabRoot" == *"R2022b" ]];then 
+    subdir="9.13"
+elif [[ "$matlabRoot" == *"R2022a" ]];then 
+    subdir="9.12"   
+elif [[ "$matlabRoot" == *"R2021b" ]];then 
+    subdir="9.11"
+elif [[ "$matlabRoot" == *"R2021a" ]];then 
+    subdir="9.10"   
+elif [[ "$matlabRoot" == *"R2020b" ]];then 
+    subdir="9.9"
+elif [[ "$matlabRoot" == *"R2020a" ]];then 
+    subdir="9.8"        
+else
+    subdir="25.2"
+fi
+
+# Get the correct Home folder.
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # Mac OSX
+    homeFolder=$home
+elif [[ "$OSTYPE" == "cygwin" ]]; then
+    # Windows
+    homeFolder=$USERPROFILE
+elif [[ "$OSTYPE" == "msys" ]]; then
+    # Windows
+    homeFolder=$USERPROFILE
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    homeFolder=$HOME
+elif [[ "$OSTYPE" == "freebsd"* ]]; then
+    homeFolder=$HOME
+else
+    # Unknown - assume linux
+    homeFolder=$HOME
+fi
+
+envdir=$homeFolder/Documents/MATLAB/cc4m/python/$subdir
+if [ $verbose -eq 1 ]; then echo "$envdir";fi
+
+# Git repository root folder.
 gitRootFolder=$(git rev-parse --show-toplevel)
+
+# Activate Python environment.
+. $envdir/Scripts/activate
+
+echo "adapt PythonPath"
+export PYTHONPATH
+PYTHONPATH="$envdir/Lib;$PYTHONPATH"
 
 # Initialize variables.
 gitFullFiles=
 count=0
 
-## The hook.
 # Loop over files to commit, just keep files to check.
 for file in $(git diff --cached --name-only --diff-filter=ACM); do
   if echo "$file" | grep -qE "$supportedExtensions"; then
     echo "$file contains MATLAB code."
     if [ 1 -eq $count ]
-	then
-		gitFullFiles=''$gitFullFiles,''
-	fi
-	gitFullFiles=$gitFullFiles''"$gitRootFolder/$file"''
-	count=1
+    then
+        gitFullFiles=''$gitFullFiles,''
+    fi
+    gitFullFiles=$gitFullFiles''"$gitRootFolder/$file"''
+    count=1
   else
-	echo "$file not checked."
+    echo "$file not checked."
   fi
 done
 
 if test $count -eq 0 
 then
-	echo "No MATLAB files to check."
-	exit 0
+    echo "No MATLAB files to check."
+    exit 0
 fi
 
 echo "Checking MATLAB files."
+echo " "
 
-matlabOutput=$("$matlabExe" -batch "cd('$gitRootFolder'); precommit_example('$gitFullFiles', '$configFile', $severityLevelBoundary)")
-errorlevel=$?
+# Call to CC4M.
 
-if test $errorlevel -eq 0
+matlabCmd="precommit_example('$gitFullFiles', '$configFile', 'SeverityBlock', $severityBlock, 'SeverityAllow', $severityAllow, 'ChangedOnlyScope', \"$changedOnlyScope\" )"
+
+# Source - https://stackoverflow.com/a/26827443
+# Posted by gniourf_gniourf, modified by community. See post 'Timeline' for change history
+# Retrieved 2026-01-20, License - CC BY-SA 3.0
+. <({ errorMsg=$({ bout=$(python -m cc4m_githooks.precommit "$envdir/Lib" "$matlabExe" "$gitRootFolder" "$matlabCmd"); bret=$?; } 2>&1; declare -p bout bret >&2); declare -p errorMsg; } 2>&1)
+
+#. <({ berr=      $({ bout=$(banana); bret=$?; } 2>&1; declare -p bout bret >&2); declare -p berr; } 2>&1)
+
+if [ $verbose -eq 1 ]
 then
-	echo ok
-	echo $matlabOutput
-	exit 0
-else
-	echo "Commit blocked: One or more files violate critical coding guidelines. Please review and resolve the reported issues before committing."
-	echo " "
-	echo "$matlabOutput"
-	
-	exit 1
+   echo "returned: $bret"
+   echo "displayed: $bout"
+   echo "error: $errorMsg"
+fi
+
+#matlabOutput=$(python -m cc4m_githooks.precommit "$envdir/Lib" "$matlabExe" "$gitRootFolder" "precommit_example('$gitFullFiles', '$configFile', severityBlock=$severityBlock, severityAllow=$severityAllow)")
+#errorMsg=$?
+if [ $verbose -eq 1 ]; then echo "MATLAB returned errorMsg: $errorMsg";fi
+
+# Allows us to read user input below, assigns stdin to keyboard.
+if [ "$TGIT_INITIATED_CALL" == "1" ]
+then 
+	echo "run from Tortoise"
+else	
+	exec < /dev/tty
 fi	
 
+if [ $bret -eq 0 ]
+then
+    echo "Files checked and ok."
+    exit 0
+else
+	echo "Returned $bret"
+    if  [ $bret -eq 1 ]
+    then
+        echo "Blocking violations found - commit canceled."
+		exit 1
+	elif [ $bret -gt 5 ]
+	then 
+		echo "Error occured during checking - commit canceled." 
+		echo "Returned information: $bout"
+		echo "Returned error message: $errorMsg"
+		exit 1
+    else
+        read -p "Violations found, do you still want to commit? (y/N)" -n 1 -r
+		echo    # (optional) move to a new line
+		if [[ $REPLY =~ ^[Yy]$ ]]
+		then
+			exit 0
+		fi
+		echo "Commit canceled."
+		exit 1
+    fi
+    
+fi
