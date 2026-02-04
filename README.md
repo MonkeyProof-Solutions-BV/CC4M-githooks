@@ -25,7 +25,7 @@ To use the CC4M pre-commit hook provided in this repository, the following softw
 * MATLAB R2020b or later
 * CC4M version 2.21 or later
 * Python in a version supported by the installed MATLAB release, see [the MATLAB–Python compatibility matrix](https://www.mathworks.com/support/requirements/python-compatibility.html). <br>
-The minimum Python version required for the hook mechanism is 3.8.
+The minimum Python version required for the hook mechanism is 3.8. In case you do not want or have the option to integrate Python, see [below](#install-hook-without-the-use-of-python).
 * Git
 
 Ensure that all dependencies are accessible from the environment in which Git commands are executed.
