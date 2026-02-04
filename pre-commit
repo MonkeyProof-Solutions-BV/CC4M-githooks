@@ -27,7 +27,7 @@ severityBlock=0
 severityAllow=10
 
 # Scope of the changes that will be checked. Can "file", "block" or "line"
-changedOnlyScope="line"
+changedOnlyScope="file"
 
 # License-related settings
 # In case of a floating license:
@@ -166,7 +166,6 @@ then
 else	
 	exec < /dev/tty
 fi	
-
 
 if [ $bret -eq 0 ]
 then
