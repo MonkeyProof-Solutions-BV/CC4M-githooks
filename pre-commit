@@ -160,11 +160,19 @@ fi
 if [ $verbose -eq 1 ]; then echo "MATLAB returned errorMsg: $errorMsg";fi
 
 # Allows us to read user input below, assigns stdin to keyboard.
+isInteractive=0
 if [ "$TGIT_INITIATED_CALL" == "1" ]
 then 
 	echo "run from Tortoise"
-else	
-	exec < /dev/tty
+elif [ "$_" == "'run from MATLAB'" ]
+then 
+    echo "run from MATLAB"
+elif [ "$GIT_TERMINAL_PROMPT" == "0" ]
+then 
+    echo "run from MATLAB"
+else
+    exec < /dev/tty
+	isInteractive=1
 fi	
 
 if [ $bret -eq 0 ]
@@ -184,14 +192,20 @@ else
 		echo "Returned error message: $errorMsg"
 		exit 1
     else
-        read -p "Violations found, do you still want to commit? (y/N)" -n 1 -r
-		echo    # (optional) move to a new line
-		if [[ $REPLY =~ ^[Yy]$ ]]
+		if  [ $isInteractive -eq 1 ]
 		then
-			exit 0
+			read -p "Violations found, do you still want to commit? (y/N)" -n 1 -r
+			echo    # (optional) move to a new line
+			if [[ $REPLY =~ ^[Yy]$ ]]
+			then
+				exit 0
+			fi
+			echo "Commit canceled."
+			exit 1
+		else
+			echo "Non-blocking violations found - commit canceled anyway, as using Git from MATLAB does not allow for interaction." >&2
+			exit 1    
 		fi
-		echo "Commit canceled."
-		exit 1
     fi
     
 fi

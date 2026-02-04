@@ -11,7 +11,7 @@ function exitFlag = precommit_example(filestring, configFile, options)
     % * configFile       (char)      (File)name of CC4M configuration (default: 'MonkeyProofMATLABCodingStandard').
     %
     % Inputs - named
-    % * SeverityBlock    (double)    Lowest severity that blocks a commit (default:3).
+    % * SeverityBlock    (double)    Lowest severity that blocks a commit (default:1).
     % * SeverityAllow    (double)    Lowest severity that can block a commit (default:8).
     % * DoOpenReport     (boolean)   If true (default), opens a the HTML report of the detected violations.
     % * IsVerbose        (boolean)   If true (default), shows some more information in the shell.
@@ -38,6 +38,7 @@ function exitFlag = precommit_example(filestring, configFile, options)
             'file',             files, ...
             'configFile',       configFile, ...
             '-changedOnly', ...
+            '-doNotOpenReport', ...
             'runSeverities',    options.SeverityAllow, ...
             'changedOnlyScope', char(options.ChangedOnlyScope));
 
@@ -81,9 +82,9 @@ function exitFlag = precommit_example(filestring, configFile, options)
             end
         end
     catch ME
-        disp (ME. message)
+        disp (ME.message)
         disp ("---------------------------------------------------------")
-        disp (ME.getReport)
+        disp (ME.getReport())
         disp ("---------------------------------------------------------")
         exitFlag = 10;
     end
