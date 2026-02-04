@@ -1,14 +1,10 @@
 # CC4M-githooks
 
 
-Here is a more technical, documentation-style rewrite with a neutral and precise tone:
-
----
-
 ## Static Code Analysis with CC4M Pre-Commit Hook
 
 To ensure consistent code quality, this repository includes support for running static code analysis on MATLAB source files prior to committing changes. The analysis is performed using [CC4M (Code Checker for MATLAB)](https://monkeyproofsolutions.nl/products/code-checker-for-matlab/) and is integrated into the Git workflow via a **pre-commit hook**.
-The pre-commit hook automatically invokes CC4M during the commit process to verify that modified MATLAB files comply with the defined coding guidelines.
+The pre-commit hook automatically invokes CC4M during the commit process to verify that modified MATLAB files comply with the defined coding guidelines. This check can even run in your current active session, see [below](#connect-with-open-development-session).
 
 ## Workflow
 
@@ -72,7 +68,7 @@ The reason for using Python in the hook is performance: from Python the `matlabe
 If for some reason direct calls to MATLAB are needed, release [v1.0.0](https://github.com/MonkeyProof-Solutions-BV/CC4M-githooks/releases/tag/v1.0.0) of the CC4M githooks is implemented without the Python intermediate layer. 
 
 
-### Connect with open development session
+## Connect with open development session
 
 To reuse the MATLAB session you have open already, enable sharing the engine with the name "CC4M_MATLAB_SESSION" or run [`cc4m_connectpy()`](./matlab/cc4m_connectpy.m).
 Additional benefit is that (dependency) analysis is performed on exact same MATLAB path definition.

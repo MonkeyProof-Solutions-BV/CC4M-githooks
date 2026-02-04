@@ -160,7 +160,13 @@ fi
 if [ $verbose -eq 1 ]; then echo "MATLAB returned errorMsg: $errorMsg";fi
 
 # Allows us to read user input below, assigns stdin to keyboard.
-exec < /dev/tty
+if [ "$TGIT_INITIATED_CALL" == "1" ]
+then 
+	echo "run from Tortoise"
+else	
+	exec < /dev/tty
+fi	
+
 
 if [ $bret -eq 0 ]
 then

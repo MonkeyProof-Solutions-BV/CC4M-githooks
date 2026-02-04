@@ -51,7 +51,7 @@ function varargout = install_git_hooks(usePPI)
     else
         % Python found.
 
-        fprintf(1, "Python %s found.", pe.Version);
+        fprintf(1, "Python %s found. ", pe.Version);
         pyCmd = pe.Executable;
 
         % Test if environment already exists.
@@ -84,7 +84,7 @@ function varargout = install_git_hooks(usePPI)
 
     % Install Python - Git integration files.
     if ~hasFailed
-        disp("MATLAB engine installed. Now adding CC4M integration.")
+        disp("MATLAB engine installed. Adding CC4M integration...")
 
         pipCommand = activateCall  + ...
             " && python -m pip install --upgrade pip " + ...
